@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: e7437d3fa8a3c5e4da1e5ef6506d7690
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 190350
+  packageName: 3D Defence Lazer Turret
+  packageVersion: 1.0
+  assetPath: Assets/Bruhassets/DefenceLazer/Prefabs/LazerTower.prefab
+  uploadId: 420320

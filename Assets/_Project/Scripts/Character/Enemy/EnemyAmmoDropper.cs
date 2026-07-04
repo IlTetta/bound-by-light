@@ -1,0 +1,59 @@
+using Unity.Netcode;
+using UnityEngine;
+
+/// <summary>
+/// Aggiunge a un prefab nemico la probabilità di droppare munizioni alla morte.
+///
+/// Setup prefab nemico:
+///   1. Aggiungi questo componente accanto a HealthNetwork ed EnemyRewardOnDeath.
+///   2. Assegna il prefab AmmoPickup al campo <see cref="ammoPickupPrefab"/>.
+///   3. Registra il prefab come NetworkPrefab nelle impostazioni NGO.
+///   4. Regola <see cref="dropChance"/> (0 = mai, 1 = sempre).
+/// </summary>
+[RequireComponent(typeof(HealthNetwork))]
+public class EnemyAmmoDropper : NetworkBehaviour
+{
+    [Range(0f, 1f)]
+    [Tooltip("Probabilità di drop (0 = mai, 1 = sempre).")]
+    [SerializeField] private float dropChance = 0.35f;
+
+    [SerializeField] private GameObject ammoPickupPrefab;
+
+    [Tooltip("Munizioni per slot arma assegnate al pickup spawnato.")]
+    [SerializeField] private int ammoAmount = 6;
+
+    private HealthNetwork _health;
+
+    public override void OnNetworkSpawn()
+    {
+        if (!IsServer) return;
+        _health = GetComponent<HealthNetwork>();
+        if (_health != null)
+            _health.OnServerDeath += TryDrop;
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        if (_health != null)
+            _health.OnServerDeath -= TryDrop;
+    }
+
+    private void TryDrop()
+    {
+        if (ammoPickupPrefab == null) return;
+        if (Random.value > dropChance) return; // non droppare
+
+        var go = Instantiate(ammoPickupPrefab, transform.position, Quaternion.identity);
+
+        var netObj = go.GetComponent<NetworkObject>();
+        if (netObj == null)
+        {
+            Debug.LogError($"[EnemyAmmoDropper] '{ammoPickupPrefab.name}' non ha NetworkObject!");
+            Destroy(go);
+            return;
+        }
+
+        netObj.Spawn();
+        go.GetComponent<AmmoPickup>()?.SetAmount(ammoAmount);
+    }
+}

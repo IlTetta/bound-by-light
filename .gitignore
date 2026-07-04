@@ -1,0 +1,89 @@
+# ══════════════════════════════════════════════════════════════
+#  Unity — cartelle/file generati (rigenerabili, NON committare)
+# ══════════════════════════════════════════════════════════════
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+[Mm]emoryCaptures/
+[Rr]ecordings/
+.consulo/
+ExportedObj/
+crashlog.txt
+
+# IDE / editor
+.vs/
+.vscode/
+.idea/
+.vsconfig
+*.csproj
+*.unityproj
+*.sln
+*.slnx
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# Artefatti di build / log
+/TempAssembly.dll
+fmod_editor.log
+*.meta.private.*
+
+# File di ignore di Plastic SCM / Unity Version Control (non pertinenti a git)
+/ignore.conf
+/ignore_dst.conf
+
+# OS
+.DS_Store
+Thumbs.db
+sysinfo.txt
+*.stackdump
+
+# Tooling locale / doc interni (non parte del gioco pubblico)
+.claude/
+.plastic/
+/CLAUDE.md
+/LEVEL_DESIGN_DOC.md
+/AGENTS.md
+
+# Pacchetti/build export
+*.apk
+*.aab
+*.app
+*.unitypackage
+*.unitypackage.meta.private.*
+
+# File di lavoro temporanei (report di pulizia generato durante la manutenzione)
+/CLEANUP_REPORT.txt
+
+# ══════════════════════════════════════════════════════════════
+#  Asset PROPRIETARI del team — esclusi dal repo pubblico
+#  (modelli 3D dei personaggi realizzati dall'artista del team +
+#   branding). Restano in locale, non vengono pubblicati.
+# ══════════════════════════════════════════════════════════════
+
+# Modelli 3D e animazioni dei personaggi (player, nemici, boss)
+Assets/_Project/Art/Mesh/Boss/
+Assets/_Project/Animations/Boss/
+Assets/_Project/Animations/Characters/
+
+# FBX di test/modello del nemico dentro la cartella materiali
+Assets/_Project/Art/Materials/Enemy/*.fbx
+Assets/_Project/Art/Materials/Enemy/*.fbx.meta
+
+# Logo del team e artwork del titolo (menu principale)
+Assets/_Project/Art/Texture/UI/logo ufficiale.png
+Assets/_Project/Art/Texture/UI/logo ufficiale.png.meta
+Assets/_Project/Art/Texture/UI/LOGO VIDEOGIOCO NICO 2.png
+Assets/_Project/Art/Texture/UI/LOGO VIDEOGIOCO NICO 2.png.meta

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 0e502ab27d6f6b84e9570e2015b674d8
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 190350
+  packageName: 3D Defence Lazer Turret
+  packageVersion: 1.0
+  assetPath: Assets/Bruhassets/DefenceLazer/Materials/LazerBase01.mat
+  uploadId: 420320

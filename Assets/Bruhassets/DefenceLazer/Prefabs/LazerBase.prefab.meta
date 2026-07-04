@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 825ad59c617def045a3607fab784aa01
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 190350
+  packageName: 3D Defence Lazer Turret
+  packageVersion: 1.0
+  assetPath: Assets/Bruhassets/DefenceLazer/Prefabs/LazerBase.prefab
+  uploadId: 420320

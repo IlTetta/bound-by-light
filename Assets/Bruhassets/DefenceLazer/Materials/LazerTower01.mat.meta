@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b72f71fca74ec6b4d93c2e3890813c7b
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 190350
+  packageName: 3D Defence Lazer Turret
+  packageVersion: 1.0
+  assetPath: Assets/Bruhassets/DefenceLazer/Materials/LazerTower01.mat
+  uploadId: 420320

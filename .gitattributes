@@ -1,0 +1,40 @@
+# Normalizzazione automatica per i file di testo
+* text=auto
+
+# Sorgenti trattati come testo
+*.cs      text
+*.shader  text
+*.hlsl    text
+*.cginc   text
+*.json    text
+*.md      text
+*.txt     text
+*.xml     text
+*.uxml    text
+*.uss     text
+
+# File YAML di Unity: testo (merge line-based)
+*.unity   text
+*.prefab  text
+*.asset   text
+*.mat     text
+*.anim    text
+*.controller text
+*.meta    text
+
+# Binari (niente diff/merge testuale)
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.tga   binary
+*.psd   binary
+*.fbx   binary
+*.blend binary
+*.wav   binary
+*.mp3   binary
+*.ogg   binary
+*.bank  binary
+*.dll   binary
+*.pdf   binary
+*.mesh  binary
