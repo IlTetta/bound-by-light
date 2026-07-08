@@ -25,10 +25,6 @@ public sealed class EnemyMeleeBrain : NetworkBehaviour, IEnemyEntity
     [Tooltip("Rotazione Y quando il target è a destra (+X). Cambia a 180 se il modello guarda al contrario.")]
     [SerializeField] private float facingRightY = 0f;
 
-    [Header("Loot")]
-    [SerializeField] private int currencyReward = 5;
-    [SerializeField] private float energyReward = 10f;
-
     [Header("Animation")]
     [SerializeField] private Animator animator;
     [SerializeField] private float deathLingerSeconds = 3f;
@@ -44,11 +40,11 @@ public sealed class EnemyMeleeBrain : NetworkBehaviour, IEnemyEntity
     private static readonly int AnimState  = Animator.StringToHash("State");
     private static readonly int AnimIsDead = Animator.StringToHash("IsDead");
 
-    // IEnemyEntity
+    // IEnemyEntity — le reward vivono nel config, non sul prefab.
     public bool IsFlying => false;
     public bool IsDiruptor => false;
-    public int CurrencyReward => currencyReward;
-    public float EnergyReward => energyReward;
+    public int CurrencyReward => config != null ? config.currencyReward : 0;
+    public float EnergyReward => config != null ? config.energyReward : 0f;
 
     private readonly NetworkVariable<byte> _state = new(
         (byte)BrainState.Idle,
@@ -82,6 +78,15 @@ public sealed class EnemyMeleeBrain : NetworkBehaviour, IEnemyEntity
 
         // Cache HealthNetwork per evitare GetComponent in TakeDamage (chiamato ogni frame dal tether)
         _health = GetComponent<HealthNetwork>();
+
+        // Le stat di design vivono nel config. Applicarle QUI e non in OnNetworkSpawn
+        // è essenziale: HealthNetwork.OnNetworkSpawn inizializza CurrentHealth con
+        // maxHealth, e tutti gli Awake girano prima di qualsiasi OnNetworkSpawn.
+        if (config != null)
+            config.ApplyTo(gameObject);
+        else
+            Debug.LogError($"[EnemyMeleeBrain] Config non assegnato su {name}: " +
+                           "il nemico userà i valori di default dei componenti.", this);
     }
 
     public override void OnNetworkSpawn() {

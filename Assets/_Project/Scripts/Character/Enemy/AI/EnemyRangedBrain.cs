@@ -58,10 +58,6 @@ public sealed class EnemyRangedBrain : NetworkBehaviour, IEnemyEntity
     [Tooltip("Root del modello 3D (Nemico_Ranged). Usato per girare il personaggio verso il target.")]
     [SerializeField] private Transform modelTransform;
 
-    [Header("Loot")]
-    [SerializeField] private int currencyReward = 5;
-    [SerializeField] private float energyReward = 10f;
-
     [Header("Animation")]
     [SerializeField] private Animator animator;
     [SerializeField] private float deathLingerSeconds = 3f;
@@ -109,13 +105,25 @@ public sealed class EnemyRangedBrain : NetworkBehaviour, IEnemyEntity
         NetworkVariableReadPermission.Everyone,
         NetworkVariableWritePermission.Server);
 
-    // IEnemyEntity
+    // IEnemyEntity — le reward vivono nel config, non sul prefab.
     public bool IsFlying => false;
     public bool IsDiruptor => false;
-    public int CurrencyReward => currencyReward;
-    public float EnergyReward => energyReward;
+    public int CurrencyReward => config != null ? config.currencyReward : 0;
+    public float EnergyReward => config != null ? config.energyReward : 0f;
 
     // --- Lifecycle ---
+
+    private void Awake() {
+        // Le stat di design vivono nel config. Applicarle in Awake e non in
+        // OnNetworkSpawn è essenziale: HealthNetwork.OnNetworkSpawn inizializza
+        // CurrentHealth con maxHealth, e tutti gli Awake girano prima.
+        if (config != null)
+            config.ApplyTo(gameObject);
+        else
+            Debug.LogError($"[EnemyRangedBrain] Config non assegnato su {name}: " +
+                           "il nemico userà i default dei componenti.", this);
+    }
+
     public override void OnNetworkSpawn() {
         Debug.Log($"[RangedBrain] OnNetworkSpawn name={name} IsServer={IsServer} IsClient={IsClient}", this);
 

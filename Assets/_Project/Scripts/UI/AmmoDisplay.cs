@@ -27,12 +27,8 @@ public class AmmoDisplay : NetworkBehaviour
     {
         if (!IsOwner)
         {
-            // Nasconde l'intera barra per il player remoto:
-            // usa ammoBarRoot se assegnato, altrimenti si limita al testo.
-            if (ammoBarRoot != null)
-                ammoBarRoot.SetActive(false);
-            else if (ammoDisplay != null)
-                ammoDisplay.gameObject.SetActive(false);
+            // Nasconde l'intera barra per il player remoto.
+            SetBarVisible(false);
             return;
         }
 
@@ -42,9 +38,16 @@ public class AmmoDisplay : NetworkBehaviour
         _controller.OnShot            += PlayShotSound;
         _controller.OnReloadRequested  += PlayReloadSound;
         _controller.OnWeaponSwitched   += TrackWeapon;
+        _controller.OnWeaponAcquired   += HandleWeaponAcquired;
 
-        // Traccia l'arma attiva al momento dello spawn
-        TrackWeapon(_controller.ActiveWeaponIndex);
+        // La barra resta nascosta finché il player non possiede almeno un'arma.
+        // Senza questo guard WeaponAmmo.OnNetworkSpawn riempie comunque il
+        // caricatore di ammo0, e la HUD mostrava "20 / 40" a mani vuote.
+        bool hasWeapon = _controller.HasAnyWeapon;
+        SetBarVisible(hasWeapon);
+
+        if (hasWeapon)
+            TrackWeapon(_controller.ActiveWeaponIndex);
     }
 
     public override void OnNetworkDespawn()
@@ -54,9 +57,28 @@ public class AmmoDisplay : NetworkBehaviour
             _controller.OnShot            -= PlayShotSound;
             _controller.OnReloadRequested  -= PlayReloadSound;
             _controller.OnWeaponSwitched   -= TrackWeapon;
+            _controller.OnWeaponAcquired   -= HandleWeaponAcquired;
         }
 
         UntrackCurrentAmmo();
+    }
+
+    // ─── Visibilità barra ─────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Chiamato quando l'owner raccoglie un'arma (anche al ripristino post-reconnect,
+    /// via PlayerController.SyncWeaponStateClientRpc). Non legge HasAnyWeapon perché
+    /// in quel percorso i flag vengono aggiornati dopo l'invoke dell'evento.
+    /// </summary>
+    private void HandleWeaponAcquired(int slot) => SetBarVisible(true);
+
+    private void SetBarVisible(bool visible)
+    {
+        // Fallback sul solo testo se ammoBarRoot non è assegnato nel prefab.
+        if (ammoBarRoot != null)
+            ammoBarRoot.SetActive(visible);
+        else if (ammoDisplay != null)
+            ammoDisplay.gameObject.SetActive(visible);
     }
 
     private void TrackWeapon(int weaponIndex)

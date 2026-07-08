@@ -13,14 +13,20 @@ using UnityEngine;
 [RequireComponent(typeof(HealthNetwork))]
 public class EnemyAmmoDropper : NetworkBehaviour
 {
-    [Range(0f, 1f)]
-    [Tooltip("Probabilità di drop (0 = mai, 1 = sempre).")]
-    [SerializeField] private float dropChance = 0.35f;
+    // Stat di design: NON serializzate. Arrivano da EnemyBaseConfig via ConfigureStats(),
+    // chiamata dal brain in Awake. I valori qui sono solo il fallback senza config.
+    private float dropChance = 0.35f;
+    private int   ammoAmount = 6;
 
+    [Tooltip("Riferimento al prefab: resta sul prefab del nemico, non è una stat.")]
     [SerializeField] private GameObject ammoPickupPrefab;
 
-    [Tooltip("Munizioni per slot arma assegnate al pickup spawnato.")]
-    [SerializeField] private int ammoAmount = 6;
+    /// <summary>Applica le stat dal config del nemico. Da chiamare in Awake.</summary>
+    public void ConfigureStats(float newDropChance, int newAmmoAmount)
+    {
+        dropChance = Mathf.Clamp01(newDropChance);
+        ammoAmount = Mathf.Max(0, newAmmoAmount);
+    }
 
     private HealthNetwork _health;
 

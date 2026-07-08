@@ -22,7 +22,11 @@ public sealed class EnemyManager : MyGame.Core.NetworkSingleton<EnemyManager>
     [SerializeField] private NetworkObject[] enemyPrefabs;
 
     [Header("Debug")]
+    [Tooltip("Scrive in Console gli eventi di spawn/unregister dei nemici.")]
     [SerializeField] private bool logSpawnEvents = true;
+
+    [Tooltip("Disegna il contatore nemici/player in basso a sinistra. Solo in editor.")]
+    [SerializeField] private bool showDebugOverlay = false;
 
     // ─── Stato interno (solo server) ──────────────────────────────────────────
     // Nemici attivi: NetworkObjectId → NetworkObject
@@ -225,7 +229,7 @@ public sealed class EnemyManager : MyGame.Core.NetworkSingleton<EnemyManager>
 #if UNITY_EDITOR
     private void OnGUI()
     {
-        if (!logSpawnEvents) return;
+        if (!showDebugOverlay) return;
         if (!Application.isPlaying) return;
 
         // Piccolo overlay debug in basso a sinistra

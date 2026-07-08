@@ -96,6 +96,7 @@ GameObject:
   - component: {fileID: 8335973827542677978}
   - component: {fileID: 2582074560688654896}
   - component: {fileID: 5786559764808916520}
+  - component: {fileID: 2376371937288973574}
   m_Layer: 7
   m_Name: EnemyMeleePrefab
   m_TagString: Untagged
@@ -484,9 +485,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DamageFlashHandler
   renderers: []
   flashMaterial: {fileID: 2100000, guid: 5ac5f157671dd19479d8a7188d0f3332, type: 2}
-  flashColor: {r: 1, g: 0, b: 0, a: 1}
   flashDuration: 0.08
-  testWithSpaceKey: 1
+--- !u!114 &2376371937288973574
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4415500266876859512}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f42ea6f4cefef05458ae7440934bc090, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHealthBar
+  localOffset: {x: 0, y: 5, z: 0}
+  size: {x: 1.3, y: 0.15}
+  fillColor: {r: 0.85, g: 0.15, b: 0.15, a: 1}
+  lowHealthColor: {r: 0.45, g: 0.05, b: 0.05, a: 1}
+  backColor: {r: 0, g: 0, b: 0, a: 0.65}
+  hideDelay: 3
+  alwaysVisible: 0
+  fillSmoothing: 14
 --- !u!1001 &1225316133546847492
 PrefabInstance:
   m_ObjectHideFlags: 0

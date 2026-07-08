@@ -37,60 +37,48 @@ public sealed class BishopMinibossBrain : NetworkBehaviour, IEnemyEntity
     [Tooltip("Hitbox a ventaglio per Sweep (MeshCollider/BoxCollider).")]
     [SerializeField] private DamageOnTouchNetwork3D _sweepHitbox;
 
-    [Header("Movement")]
-    [SerializeField] private float _moveSpeed = 2.5f;
-
-    [Header("Detection & Attack Ranges")]
-    [SerializeField] private float _aggroRange = 8f;
-    [Tooltip("Distanza entro cui il boss si ferma e sceglie uno dei 4 attacchi a caso.")]
-    [SerializeField] private float _attackRange = 4f;
-    [Tooltip("Probabilità (0-1) che l'attacco scelto sia melee anziché ranged. 0.5 = 50/50.")]
-    [SerializeField, Range(0f, 1f)] private float _meleeProbability = 0.5f;
-
-    [Header("Melee – Heavy Smash")]
-    [SerializeField] private int _smashDamage = 20;
-    [SerializeField] private float _smashKnockback = 8f;
-    [SerializeField] private float _smashWindup = 0.7f;
-    [SerializeField] private float _smashActive = 0.25f;
-    [SerializeField] private float _smashRecover = 0.5f;
-
-    [Header("Melee – Sweep")]
-    [SerializeField] private int _sweepDamage = 12;
-    [SerializeField] private float _sweepKnockback = 5f;
-    [SerializeField] private float _sweepWindup = 0.4f;
-    [SerializeField] private float _sweepActive = 0.3f;
-    [SerializeField] private float _sweepRecover = 0.4f;
-
-    [Header("Ranged – Holy Bolt")]
-    [SerializeField] private int _boltDamage = 15;
-    [SerializeField] private float _boltCooldown = 1.5f;
-
-    [Header("Ranged – Triple Shot")]
-    [SerializeField] private int _tripleDamage = 10;
-    [SerializeField] private float _tripleCooldown = 2.2f;
-    [SerializeField] private float _tripleSpread = 30f;
-
-    [Header("Ranged – Timing")]
-    [Tooltip("Secondi dall'inizio dell'animazione ranged allo sparo del proiettile. " +
-             "Allinea con l'apice del movimento dell'arma (es. 0.5-0.8 s).")]
-    [SerializeField] private float _rangedFireDelay = 0.6f;
-
-    [Header("Cooldown between attacks")]
-    [SerializeField] private float _attackCooldownMin = 1.0f;
-    [SerializeField] private float _attackCooldownMax = 2.0f;
-
-    [Header("Reward (IEnemyEntity)")]
-    [Tooltip("Monete assegnate ai player alla morte del boss.")]
-    [SerializeField] private int _currencyReward = 50;
-    [Tooltip("Energia Bond assegnata ai player alla morte del boss.")]
-    [SerializeField] private float _energyReward = 1f;
+    [Header("Stats")]
+    [Tooltip("Tutti i numeri di bilanciamento del boss. Obbligatorio.")]
+    [SerializeField] private EnemyBossConfig config;
 
     [Header("SFX / Music")]
     [Tooltip("OST del boss (loop). Parte al primo aggro, si ferma alla morte.")]
     [SerializeField] private EventReference bossOst;
 
-    [Header("LayerMask")]
-    [SerializeField] private LayerMask _playerLayer;
+    // ── Stat di design ────────────────────────────────────────────────────────
+    // NON serializzate: riempite da ApplyConfig() in Awake leggendo EnemyBossConfig.
+    // I nomi restano invariati, così il resto del brain non cambia.
+    private float _moveSpeed  = 2.5f;
+    private float _aggroRange = 8f;
+    private float _attackRange = 4f;
+    private float _meleeProbability = 0.5f;
+
+    private int   _smashDamage    = 20;
+    private float _smashKnockback = 8f;
+    private float _smashWindup    = 0.7f;
+    private float _smashActive    = 0.25f;
+    private float _smashRecover   = 0.5f;
+
+    private int   _sweepDamage    = 12;
+    private float _sweepKnockback = 5f;
+    private float _sweepWindup    = 0.4f;
+    private float _sweepActive    = 0.3f;
+    private float _sweepRecover   = 0.4f;
+
+    private int   _boltDamage   = 15;
+    private float _boltCooldown = 1.5f;
+
+    private int   _tripleDamage   = 10;
+    private float _tripleCooldown = 2.2f;
+    private float _tripleSpread   = 30f;
+
+    private float _rangedFireDelay   = 0.6f;
+    private float _attackCooldownMin = 1.0f;
+    private float _attackCooldownMax = 2.0f;
+
+    private int       _currencyReward = 50;
+    private float     _energyReward   = 1f;
+    private LayerMask _playerLayer;
 
     // ── Stato interno ─────────────────────────────────────────────────────────
     private enum State { Idle, Chase, Attacking, Cooldown }
@@ -117,6 +105,57 @@ public sealed class BishopMinibossBrain : NetworkBehaviour, IEnemyEntity
         if (_health == null) _health = GetComponent<HealthNetwork>();
         if (_rangedWeapon == null) _rangedWeapon = GetComponent<NetworkProjectileWeapon>();
         if (_anim == null) _anim = GetComponent<BishopAnimationController>(); // ← NUOVO
+
+        // Le stat arrivano dal config. Qui e non in OnNetworkSpawn: HealthNetwork
+        // inizializza CurrentHealth con maxHealth nel proprio OnNetworkSpawn, che
+        // gira dopo tutti gli Awake.
+        if (config != null)
+        {
+            config.ApplyTo(gameObject);   // HealthNetwork, EnemyMotor3D, KnockReceiver3D
+            ApplyConfig();                // campi interni del brain
+        }
+        else
+        {
+            Debug.LogError($"[BishopMinibossBrain] Config non assegnato su {name}: " +
+                           "il boss userà i valori di default del codice, non quelli " +
+                           "bilanciati.", this);
+        }
+    }
+
+    /// <summary>Copia le stat del config nei campi interni. Solo Awake.</summary>
+    private void ApplyConfig()
+    {
+        _moveSpeed        = config.moveSpeed;
+        _aggroRange       = config.aggroRadius;
+        _attackRange      = config.attackRange;
+        _meleeProbability = config.meleeProbability;
+        _playerLayer      = config.playerMask;
+
+        _smashDamage    = config.smashDamage;
+        _smashKnockback = config.smashKnockback;
+        _smashWindup    = config.smashWindup;
+        _smashActive    = config.smashActive;
+        _smashRecover   = config.smashRecover;
+
+        _sweepDamage    = config.sweepDamage;
+        _sweepKnockback = config.sweepKnockback;
+        _sweepWindup    = config.sweepWindup;
+        _sweepActive    = config.sweepActive;
+        _sweepRecover   = config.sweepRecover;
+
+        _boltDamage   = config.boltDamage;
+        _boltCooldown = config.boltCooldown;
+
+        _tripleDamage   = config.tripleDamage;
+        _tripleCooldown = config.tripleCooldown;
+        _tripleSpread   = config.tripleSpread;
+
+        _rangedFireDelay   = config.rangedFireDelay;
+        _attackCooldownMin = config.attackCooldownMin;
+        _attackCooldownMax = config.attackCooldownMax;
+
+        _currencyReward = config.currencyReward;
+        _energyReward   = config.energyReward;
     }
 
     public override void OnNetworkSpawn()

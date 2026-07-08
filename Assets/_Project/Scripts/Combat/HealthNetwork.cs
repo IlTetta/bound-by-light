@@ -5,7 +5,12 @@ using Unity.Netcode;
 
 public class HealthNetwork : NetworkBehaviour
 {
+    [Tooltip("Vita massima. Sui PLAYER è il valore effettivo.\n" +
+             "Sui NEMICI viene SOVRASCRITTO in Awake da EnemyBaseConfig.maxHealth: " +
+             "il valore che vedi qui è ignorato.")]
     [SerializeField] private int maxHealth = 100;
+
+    [Tooltip("Sui nemici viene sovrascritto da EnemyBaseConfig.invincibilitySeconds.")]
     [SerializeField] private float invincibilitySeconds = 0.25f;
 
     [Header("Death")]
@@ -54,6 +59,22 @@ public class HealthNetwork : NetworkBehaviour
     // grazie al check if(IsDead) return; in ApplyDamageInternal.
     
     public int MaxHealth => maxHealth;
+
+    /// <summary>
+    /// Applica le stat dal config del nemico. Va chiamata in Awake: OnNetworkSpawn
+    /// legge maxHealth per inizializzare CurrentHealth, e gira dopo tutti gli Awake.
+    /// </summary>
+    public void ConfigureStats(int newMaxHealth, float newInvincibilitySeconds)
+    {
+        if (IsSpawned)
+        {
+            Debug.LogWarning($"[HealthNetwork] ConfigureStats chiamata dopo lo spawn su " +
+                             $"{name}: CurrentHealth è già stata inizializzata.", this);
+        }
+
+        maxHealth            = Mathf.Max(1, newMaxHealth);
+        invincibilitySeconds = Mathf.Max(0f, newInvincibilitySeconds);
+    }
 
     public override void OnNetworkSpawn() {
         _faintHandler = GetComponent<PlayerFaintHandler>();

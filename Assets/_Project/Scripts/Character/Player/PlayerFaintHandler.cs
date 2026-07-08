@@ -24,8 +24,11 @@ public class PlayerFaintHandler : NetworkBehaviour
     [SerializeField] private StudioEventEmitter reviveSfxEmitter;
 
     [Header("Revive Settings")]
-    [Tooltip("Raggio entro cui il compagno deve trovarsi per rianimare.")]
-    [SerializeField] private float reviveRadius = 2f;
+    [Tooltip("Raggio entro cui il compagno deve trovarsi per rianimare.\n" +
+             "Misurato centro-centro sul piano XZ, in world units. Il player ha " +
+             "raggio ~1.16 (capsule 5.81 × scale 0.2), quindi sotto ~2.4 i due " +
+             "modelli devono compenetrarsi. Usa il gizmo per tararlo.")]
+    [SerializeField] private float reviveRadius = 4.5f;
 
     [Tooltip("Percentuale di vita ripristinata alla rianimazione (0-1).")]
     [Range(0f, 1f)]
@@ -40,7 +43,14 @@ public class PlayerFaintHandler : NetworkBehaviour
         NetworkVariableWritePermission.Server
     );
 
-    private float _reviveProgress = 0f;
+    // Progresso di rianimazione. Server-write, ma replicato a tutti perché
+    // ReviveIndicator lo legge su entrambi i client per disegnare l'arco.
+    private readonly NetworkVariable<float> _reviveProgress = new(
+        0f,
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Server
+    );
+
     private float _reviveRpcTimer  = 0f; // throttle lato client: invia RPC max a 10fps
 
     private HealthNetwork _health;
@@ -52,6 +62,13 @@ public class PlayerFaintHandler : NetworkBehaviour
     private PlayerFaintHandler _currentReviveTarget;
 
     public bool IsFainted => _isFainted.Value;
+
+    /// <summary>Raggio di rianimazione in world units. Letto da ReviveIndicator.</summary>
+    public float ReviveRadius => reviveRadius;
+
+    /// <summary>Progresso di rianimazione normalizzato 0..1. Replicato su tutti i client.</summary>
+    public float ReviveProgress01 =>
+        reviveHoldTime > 0f ? Mathf.Clamp01(_reviveProgress.Value / reviveHoldTime) : 0f;
 
     /// <summary>
     /// True sull'owner mentre sta tenendo H per rianimare il compagno.
@@ -163,7 +180,7 @@ public class PlayerFaintHandler : NetworkBehaviour
         if (!IsServer) return;
         if (_isFainted.Value) return;
 
-        _reviveProgress = 0f;
+        _reviveProgress.Value = 0f;
         _isFainted.Value = true;
         OnFaintStateChanged?.Invoke(true);
 
@@ -179,7 +196,7 @@ public class PlayerFaintHandler : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void ResetReviveProgressServerRpc()
     {
-        _reviveProgress = 0f;
+        _reviveProgress.Value = 0f;
     }
 
     /// <summary>
@@ -198,10 +215,9 @@ public class PlayerFaintHandler : NetworkBehaviour
         // Il controllo distanza avviene già lato client in FindFaintedCompanionInRange.
         // Non ripetiamo la verifica qui perché il server potrebbe non avere la posizione
         // aggiornata del joiner (problema noto con NT authority).
-        _reviveProgress += deltaTime;
-        Debug.Log($"[PlayerFaintHandler] Revive progress: {_reviveProgress:F1}/{reviveHoldTime}");
+        _reviveProgress.Value += deltaTime;
 
-        if (_reviveProgress >= reviveHoldTime)
+        if (_reviveProgress.Value >= reviveHoldTime)
             Revive();
     }
 
@@ -214,7 +230,7 @@ public class PlayerFaintHandler : NetworkBehaviour
     public void ForceRevive(int overrideHp = -1)
     {
         if (!IsServer || !_isFainted.Value) return;
-        _reviveProgress  = 0f;
+        _reviveProgress.Value = 0f;
         _isFainted.Value = false;
         OnFaintStateChanged?.Invoke(false);
         _health.CurrentHealth.Value = overrideHp > 0
@@ -226,7 +242,7 @@ public class PlayerFaintHandler : NetworkBehaviour
     {
         if (!IsServer) return;
 
-        _reviveProgress = 0f;
+        _reviveProgress.Value = 0f;
         _isFainted.Value = false;
         OnFaintStateChanged?.Invoke(false);
 
@@ -284,8 +300,15 @@ public class PlayerFaintHandler : NetworkBehaviour
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected()
     {
-        if (!_isFainted.Value) return;
-        Gizmos.color = new Color(1f, 0.5f, 0f, 0.4f);
+        // Disegnato sempre, anche a design-time: prima il gizmo usciva solo se
+        // _isFainted.Value era true, quindi nel prefab non si vedeva mai e il
+        // raggio non era tarabile a vista.
+        bool faintedNow = Application.isPlaying && IsSpawned && _isFainted.Value;
+
+        Gizmos.color = faintedNow
+            ? new Color(1f, 0.2f, 0.1f, 0.7f)   // fainted: in attesa di revive
+            : new Color(1f, 0.5f, 0f, 0.35f);   // range nominale
+
         Gizmos.DrawWireSphere(transform.position, reviveRadius);
     }
 #endif

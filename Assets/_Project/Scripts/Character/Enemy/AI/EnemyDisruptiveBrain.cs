@@ -49,10 +49,6 @@ public class EnemyDisruptiveBrain : NetworkBehaviour, IEnemyEntity
     [SerializeField] private Color telegraphColor = new Color(1f, 0.4f, 0f, 0.85f); // arancione
     [SerializeField] private float telegraphLength = 10f;
 
-    [Header("Loot")]
-    [SerializeField] private int currencyReward = 5;
-    [SerializeField] private float energyReward = 10f;
-
     [Header("Debug")]
     [SerializeField] private bool drawGizmos = true;
 
@@ -78,16 +74,29 @@ public class EnemyDisruptiveBrain : NetworkBehaviour, IEnemyEntity
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Server);
 
-    // IEnemyEntity
+    // IEnemyEntity — le reward vivono nel config, non sul prefab.
     public bool IsFlying => false;
     public bool IsDiruptor => true;
-    public int CurrencyReward => currencyReward;
-    public float EnergyReward => energyReward;
+    public int CurrencyReward => config != null ? config.currencyReward : 0;
+    public float EnergyReward => config != null ? config.energyReward : 0f;
 
     // Cache
     private HealthNetwork _health;
 
     // Lifecycle
+
+    private void Awake()
+    {
+        // Le stat di design vivono nel config. Applicarle in Awake e non in
+        // OnNetworkSpawn è essenziale: HealthNetwork.OnNetworkSpawn inizializza
+        // CurrentHealth con maxHealth, e tutti gli Awake girano prima.
+        if (config != null)
+            config.ApplyTo(gameObject);
+        else
+            Debug.LogError($"[EnemyDisruptiveBrain] Config non assegnato su {name}: " +
+                           "il nemico userà i default dei componenti.", this);
+    }
+
     public override void OnNetworkSpawn()
     {
         // Cache salute (necessaria in TakeDamage, chiamato dal tether ogni frame)

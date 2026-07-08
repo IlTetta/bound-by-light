@@ -129,5 +129,6 @@ public class LocalPlayerHUD : NetworkBehaviour
         if (canvasMinimap != null) canvasMinimap.SetActive(false);
         if (inventario != null) inventario.SetActive(false);
         if (pauseMenu != null) pauseMenu.SetActive(false);
+        if (itemHudCamera != null) itemHudCamera.gameObject.SetActive(false);
     }
 }

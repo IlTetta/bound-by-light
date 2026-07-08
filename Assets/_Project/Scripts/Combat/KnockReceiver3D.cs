@@ -9,7 +9,12 @@ using Unity.Netcode;
 [RequireComponent(typeof(Rigidbody))]
 public class KnockReceiver3D : NetworkBehaviour
 {
+    [Tooltip("Sui PLAYER è il valore effettivo.\n" +
+             "Sui NEMICI viene sovrascritto da EnemyBaseConfig.knockReceiverDecay.")]
     [SerializeField] private float decay = 20f;
+
+    /// <summary>Applica le stat dal config del nemico. Da chiamare in Awake.</summary>
+    public void ConfigureStats(float newDecay) => decay = Mathf.Max(0f, newDecay);
 
     private Rigidbody _rb;
     private Vector3   _impactVelocity;

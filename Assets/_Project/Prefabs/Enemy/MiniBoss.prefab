@@ -336,6 +336,7 @@ GameObject:
   - component: {fileID: 8080090428621550567}
   - component: {fileID: 8623496746779532416}
   - component: {fileID: -1622493305807909306}
+  - component: {fileID: 3003415908597732173}
   m_Layer: 7
   m_Name: MiniBoss
   m_TagString: Untagged
@@ -469,30 +470,7 @@ MonoBehaviour:
   _muzzlePoint: {fileID: 6606051590769604448}
   _smashHitbox: {fileID: 552181921489665842}
   _sweepHitbox: {fileID: 4088421857371439542}
-  _moveSpeed: 6
-  _aggroRange: 25
-  _attackRange: 20
-  _meleeProbability: 0.5
-  _smashDamage: 15
-  _smashKnockback: 8
-  _smashWindup: 0.7
-  _smashActive: 0.25
-  _smashRecover: 0.5
-  _sweepDamage: 12
-  _sweepKnockback: 5
-  _sweepWindup: 0.4
-  _sweepActive: 0.3
-  _sweepRecover: 0.4
-  _boltDamage: 15
-  _boltCooldown: 1.5
-  _tripleDamage: 8
-  _tripleCooldown: 2.2
-  _tripleSpread: 30
-  _rangedFireDelay: 1.1
-  _attackCooldownMin: 1
-  _attackCooldownMax: 2
-  _currencyReward: 50
-  _energyReward: 40
+  config: {fileID: 11400000, guid: 3c1f9a5e70b24d6ea8154bd39f27c6e1, type: 2}
   bossOst:
     Guid:
       Data1: 1030359814
@@ -500,9 +478,6 @@ MonoBehaviour:
       Data3: -623342171
       Data4: 1122499497
     Path: event:/BOSS OST
-  _playerLayer:
-    serializedVersion: 2
-    m_Bits: 8
 --- !u!114 &3101691839901604690
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -559,10 +534,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5785f6e44a5dedf4e82ef36c45d30be5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMotor3D
-  maxKnockbackSpeed: 4
-  knockbackDecay: 10
-  separationRadius: 1.2
-  separationForce: 4
   enemyLayer:
     serializedVersion: 2
     m_Bits: 128
@@ -674,9 +645,39 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DamageFlashHandler
   renderers: []
   flashMaterial: {fileID: 2100000, guid: 5ac5f157671dd19479d8a7188d0f3332, type: 2}
-  flashColor: {r: 1, g: 0, b: 0, a: 1}
   flashDuration: 0.08
-  testWithSpaceKey: 1
+--- !u!114 &3003415908597732173
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5704173772706422311}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 931384a810862d54a902475af3de9cb7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossHealthBar
+  bossName: Bishop
+  showOnSpawn: 1
+  style:
+    barSize: {x: 900, y: 18}
+    topMargin: 70
+    frameThickness: 2
+    fillColor: {r: 0.72, g: 0.1, b: 0.1, a: 1}
+    lowHealthColor: {r: 0.35, g: 0.03, b: 0.03, a: 1}
+    chipColor: {r: 0.95, g: 0.85, b: 0.6, a: 0.9}
+    backColor: {r: 0.05, g: 0.04, b: 0.03, a: 0.85}
+    frameColor: {r: 0.55, g: 0.47, b: 0.3, a: 1}
+    font: {fileID: 0}
+    nameFontSize: 26
+    nameSpacing: 6
+    nameColor: {r: 0.9, g: 0.86, b: 0.75, a: 1}
+    mainSmoothing: 14
+    chipDelay: 0.45
+    chipSpeed: 0.35
+    fadeSpeed: 3
+    sortingOrder: 5
 --- !u!1001 &3359382731036564420
 PrefabInstance:
   m_ObjectHideFlags: 0

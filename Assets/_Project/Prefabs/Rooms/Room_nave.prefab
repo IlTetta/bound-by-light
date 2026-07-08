@@ -199,7 +199,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1902065758
+  GlobalObjectIdHash: 485660582
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -364,7 +364,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a46b0abefee6d0e498245788bb49f8b4, type: 2}
+  - {fileID: 2100000, guid: 779ece39f4cd9fc4b8bf21e66841e8c2, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -676,7 +676,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a46b0abefee6d0e498245788bb49f8b4, type: 2}
+  - {fileID: 2100000, guid: 7091e39fb35a97a4992611a9c9f7bb4d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -854,7 +854,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a46b0abefee6d0e498245788bb49f8b4, type: 2}
+  - {fileID: 2100000, guid: 7091e39fb35a97a4992611a9c9f7bb4d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -969,7 +969,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a46b0abefee6d0e498245788bb49f8b4, type: 2}
+  - {fileID: 2100000, guid: 779ece39f4cd9fc4b8bf21e66841e8c2, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1369,13 +1369,7 @@ MonoBehaviour:
   allRoomsRequired: []
   wellToWatch: {fileID: 0}
   requiredKeys: 0
-  doorSfx:
-    Guid:
-      Data1: -2010175928
-      Data2: 1203081376
-      Data3: -388079991
-      Data4: 987317186
-    Path: event:/SFX/Door
+  doorSfxEmitter: {fileID: 0}
   doorRenderer: {fileID: 1415599919735916649}
   lockedEmission: {r: 0.75, g: 0.075, b: 0.075, a: 1.5}
   idleEmission: {r: 0.1, g: 1.1, b: 0.3, a: 2}
@@ -1774,13 +1768,7 @@ MonoBehaviour:
   allRoomsRequired: []
   wellToWatch: {fileID: 0}
   requiredKeys: 0
-  doorSfx:
-    Guid:
-      Data1: -2010175928
-      Data2: 1203081376
-      Data3: -388079991
-      Data4: 987317186
-    Path: event:/SFX/Door
+  doorSfxEmitter: {fileID: 0}
   doorRenderer: {fileID: 5046140302747964961}
   lockedEmission: {r: 0.75, g: 0.075, b: 0.075, a: 1.5}
   idleEmission: {r: 0.1, g: 1.1, b: 0.3, a: 2}

@@ -8,14 +8,28 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public sealed class EnemyMotor3D : MonoBehaviour
 {
-    [Header("Knockback")]
-    [SerializeField] private float maxKnockbackSpeed = 4f;
-    [SerializeField] private float knockbackDecay    = 10f;
+    // Stat di design: NON serializzate. Arrivano da EnemyBaseConfig via ConfigureStats(),
+    // chiamata dal brain in Awake. Tenerle anche nell'Inspector significherebbe due
+    // sorgenti per lo stesso numero, destinate prima o poi a divergere.
+    // I valori qui sotto sono solo il fallback se il brain non ha un config.
+    private float maxKnockbackSpeed = 4f;
+    private float knockbackDecay    = 10f;
+    private float separationRadius  = 1.0f;
+    private float separationForce   = 4f;
 
     [Header("Separazione (anti-overlap)")]
-    [SerializeField] private float     separationRadius = 1.0f;
-    [SerializeField] private float     separationForce  = 4f;
+    [Tooltip("Layer dei nemici. Non è una stat di bilanciamento: resta sul prefab.")]
     [SerializeField] private LayerMask enemyLayer;
+
+    /// <summary>Applica le stat dal config del nemico. Da chiamare in Awake.</summary>
+    public void ConfigureStats(float newMaxKnockbackSpeed, float newKnockbackDecay,
+                               float newSeparationRadius, float newSeparationForce)
+    {
+        maxKnockbackSpeed = newMaxKnockbackSpeed;
+        knockbackDecay    = newKnockbackDecay;
+        separationRadius  = newSeparationRadius;
+        separationForce   = newSeparationForce;
+    }
 
     private Rigidbody _rb;
     private float     _fixedY;

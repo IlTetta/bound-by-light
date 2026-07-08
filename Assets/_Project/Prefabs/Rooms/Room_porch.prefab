@@ -345,7 +345,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a46b0abefee6d0e498245788bb49f8b4, type: 2}
+  - {fileID: 2100000, guid: 779ece39f4cd9fc4b8bf21e66841e8c2, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -823,7 +823,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a46b0abefee6d0e498245788bb49f8b4, type: 2}
+  - {fileID: 2100000, guid: 7091e39fb35a97a4992611a9c9f7bb4d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -935,7 +935,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a46b0abefee6d0e498245788bb49f8b4, type: 2}
+  - {fileID: 2100000, guid: 779ece39f4cd9fc4b8bf21e66841e8c2, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1629,7 +1629,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a46b0abefee6d0e498245788bb49f8b4, type: 2}
+  - {fileID: 2100000, guid: 7091e39fb35a97a4992611a9c9f7bb4d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1743,7 +1743,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 51721f2cbe83099418529b2ed02f8b54, type: 2}
+  - {fileID: 2100000, guid: 0ebf2fb4a372fe945a63d68d943d9ef5, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1779,6 +1779,7 @@ GameObject:
   - component: {fileID: 3345304365632046683}
   - component: {fileID: 7216120508580929071}
   - component: {fileID: 8863515982248391926}
+  - component: {fileID: 1545221399977359767}
   m_Layer: 0
   m_Name: LadderTrigger
   m_TagString: Untagged
@@ -1874,6 +1875,29 @@ MonoBehaviour:
   lockedEmission: {r: 0.75, g: 0.075, b: 0.075, a: 1.5}
   idleEmission: {r: 0.1, g: 1.1, b: 0.3, a: 2}
   readyEmission: {r: 0.90000004, g: 6, b: 2.4, a: 6}
+--- !u!114 &1545221399977359767
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5849667042915440067}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 794dac7f4e8ba7a45a2edc1964c4ae4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RadialProgressRing
+  baseRadius: 2
+  progressRadius: 1.7
+  groundOffset: 0.06
+  baseWidth: 0.08
+  progressWidth: 0.16
+  baseColor: {r: 0.35, g: 0.85, b: 1, a: 0.35}
+  progressColor: {r: 0.65, g: 0.95, b: 1, a: 0.95}
+  pulseAmount: 0.35
+  pulseSpeed: 2.2
+  smoothing: 12
+  lineMaterial: {fileID: 2100000, guid: 4539910f2e704194a838c60e277bb72b, type: 2}
 --- !u!1 &5959435875331169044
 GameObject:
   m_ObjectHideFlags: 0
@@ -2215,7 +2239,7 @@ Terrain:
   m_StaticShadowCaster: 0
   m_IgnoreQualitySettings: 0
   m_ReflectionProbeUsage: 1
-  m_MaterialTemplate: {fileID: 2100000, guid: 594ea882c5a793440b60ff72d896021e, type: 2}
+  m_MaterialTemplate: {fileID: 2100000, guid: 7d23f9b66cfb9c549bb8e9d584f52efe, type: 2}
   m_BakeLightProbesForTrees: 1
   m_PreserveTreePrototypeLayers: 0
   m_DeringLightProbesForTrees: 1
@@ -2328,11 +2352,11 @@ MonoBehaviour:
   staircaseObject: {fileID: 4124716615648935216}
   ladderObject: {fileID: 3806990859519972977}
   undergroundDoor: {fileID: 0}
-  wellRenderer: {fileID: 6614578410049933870}
-  idleGlowColor: {r: 0.2, g: 0.8, b: 1, a: 1}
-  activatedGlowColor: {r: 1, g: 0.85, b: 0.05, a: 1}
-  maxEmissionIntensity: 2.5
-  activationParticles: {fileID: 1623298396792479162, guid: 6a08bf3f7984d534fac13f379cc2f82c, type: 3}
+  progressRing: {fileID: 0}
+  idleVfx: {fileID: 0}
+  chargingVfx: {fileID: 0}
+  activationVfx: {fileID: 1623298396792479162, guid: 6a08bf3f7984d534fac13f379cc2f82c, type: 3}
+  staircaseRevealVfx: {fileID: 0}
 --- !u!65 &7482159438532988940
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2430,11 +2454,6 @@ PrefabInstance:
 --- !u!4 &6597726506336150742 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4659987072926718, guid: 6f36196fa45b4bf458acb1e445499ce1, type: 3}
-  m_PrefabInstance: {fileID: 6602096144694355752}
-  m_PrefabAsset: {fileID: 0}
---- !u!23 &6614578410049933870 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 23907172568347910, guid: 6f36196fa45b4bf458acb1e445499ce1, type: 3}
   m_PrefabInstance: {fileID: 6602096144694355752}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6763399420242804648

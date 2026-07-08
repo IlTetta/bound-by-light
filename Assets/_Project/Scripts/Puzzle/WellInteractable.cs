@@ -1,6 +1,7 @@
 using MyGame.Core;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Pozzo interagibile tramite il tether.
@@ -45,15 +46,23 @@ public class WellInteractable : NetworkBehaviour
     [SerializeField] private RoomDoor undergroundDoor;
 
     [Header("Feedback visivo")]
-    [Tooltip("Renderer del modello del pozzo per l'effetto glow.")]
-    [SerializeField] private Renderer wellRenderer;
-    [SerializeField] private Color idleGlowColor      = new Color(0.2f, 0.8f, 1f);
-    [SerializeField] private Color activatedGlowColor = new Color(1f, 0.85f, 0.05f);
-    [Tooltip("Intensità massima dell'emission quando il timer è al 100%.")]
-    [SerializeField] private float maxEmissionIntensity = 2.5f;
+    [Tooltip("Anello a terra attorno al pozzo. Mostra l'area di interazione e si " +
+             "riempie mentre il tether è a contatto. Nascosto dopo l'attivazione.")]
+    [SerializeField] private RadialProgressRing progressRing;
 
-    [Tooltip("Particelle opzionali all'attivazione.")]
-    [SerializeField] private ParticleSystem activationParticles;
+    [Header("VFX")]
+    [Tooltip("Loop. Segnala che il pozzo è interagibile. Fermato all'attivazione.")]
+    [SerializeField] private ParticleSystem idleVfx;
+
+    [Tooltip("Loop. Suonato solo mentre il tether sta caricando il pozzo.")]
+    [SerializeField] private ParticleSystem chargingVfx;
+
+    [Tooltip("Burst una tantum all'attivazione, sul pozzo.")]
+    [FormerlySerializedAs("activationParticles")]   // era già assegnato a VFX_WellActivation
+    [SerializeField] private ParticleSystem activationVfx;
+
+    [Tooltip("Burst una tantum sulla scala che compare.")]
+    [SerializeField] private ParticleSystem staircaseRevealVfx;
 
     // ─── NetworkVariables ─────────────────────────────────────────────────────
 
@@ -68,7 +77,10 @@ public class WellInteractable : NetworkBehaviour
     // ─── Privati ─────────────────────────────────────────────────────────────
 
     private TetherManager _tether;
-    private MaterialPropertyBlock _mpb;
+
+    // Guardia contro la doppia applicazione: OnValueChanged e la vecchia ClientRpc
+    // arrivavano entrambi, facendo partire le particelle di attivazione due volte.
+    private bool _activatedApplied;
 
     // Buffer statico condiviso per OverlapCapsuleNonAlloc: evita allocazioni ogni Update.
     private static readonly Collider[] _overlapBuffer = new Collider[8];
@@ -77,8 +89,6 @@ public class WellInteractable : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        _mpb = new MaterialPropertyBlock();
-
         if (IsServer)
             _tether = FindFirstObjectByType<TetherManager>();
 
@@ -88,15 +98,24 @@ public class WellInteractable : NetworkBehaviour
         };
 
         if (IsActivated.Value)
-            ApplyActivatedState();
+        {
+            // Late joiner: il pozzo è già attivo, niente VFX né anello.
+            ApplyActivatedState(playVfx: false);
+        }
+        else
+        {
+            progressRing?.SetVisible(true);
+            progressRing?.ResetProgress();
+            PlayIfNotPlaying(idleVfx);
+        }
     }
 
     // ─── Update ───────────────────────────────────────────────────────────────
 
     private void Update()
     {
-        // Glow: tutti i client leggono Progress (NetworkVariable sincronizzata)
-        UpdateGlow();
+        // Feedback: tutti i client leggono Progress (NetworkVariable sincronizzata)
+        UpdateFeedback();
 
         // Timer: solo server
         if (!IsServer || IsActivated.Value) return;
@@ -115,17 +134,20 @@ public class WellInteractable : NetworkBehaviour
         }
     }
 
-    private void UpdateGlow()
+    private void UpdateFeedback()
     {
-        if (wellRenderer == null || _mpb == null) return;
+        if (IsActivated.Value) return;
 
-        float t = IsActivated.Value ? 1f : Progress.Value;
-        Color glowColor = Color.Lerp(idleGlowColor, activatedGlowColor, t);
-        float intensity = t * maxEmissionIntensity;
+        float p = Progress.Value;
+        progressRing?.SetProgress(p);
 
-        wellRenderer.GetPropertyBlock(_mpb);
-        _mpb.SetColor("_EmissionColor", glowColor * intensity);
-        wellRenderer.SetPropertyBlock(_mpb);
+        // chargingVfx segue lo stato di carica, su ogni client.
+        if (chargingVfx != null)
+        {
+            bool charging = p > 0.001f;
+            if (charging && !chargingVfx.isPlaying)      chargingVfx.Play();
+            else if (!charging && chargingVfx.isPlaying) chargingVfx.Stop();
+        }
     }
 
     // ─── Rilevamento ──────────────────────────────────────────────────────────
@@ -155,33 +177,41 @@ public class WellInteractable : NetworkBehaviour
 
     private void Activate()
     {
+        // IsActivated è server-write: assegnarla replica lo stato a tutti i client
+        // e fa scattare OnValueChanged ovunque, incluso qui sull'host.
+        // Non serve una ClientRpc — anzi, prima ne arrivavano due e le particelle
+        // di attivazione partivano doppie.
         IsActivated.Value = true;
 
         if (undergroundDoor != null)
             undergroundDoor.Open();
 
-        RevealStaircaseClientRpc();
-
         Debug.Log("[WellInteractable] Pozzo attivato — scala rivelata, Bond Ability sbloccata.");
     }
 
-    // ─── RPC ─────────────────────────────────────────────────────────────────
-
-    [Rpc(SendTo.Everyone)]
-    private void RevealStaircaseClientRpc()
+    private void ApplyActivatedState(bool playVfx = true)
     {
-        ApplyActivatedState();
+        if (_activatedApplied) return;
+        _activatedApplied = true;
+
+        if (staircaseObject != null) staircaseObject.SetActive(true);
+        if (ladderObject    != null) ladderObject.SetActive(true);
+
+        // L'anello ha finito il suo lavoro: il pozzo non è più interagibile.
+        progressRing?.SetVisible(false);
+
+        if (idleVfx     != null && idleVfx.isPlaying)     idleVfx.Stop();
+        if (chargingVfx != null && chargingVfx.isPlaying) chargingVfx.Stop();
+
+        if (!playVfx) return;
+
+        activationVfx?.Play();
+        staircaseRevealVfx?.Play();
     }
 
-    private void ApplyActivatedState()
+    private static void PlayIfNotPlaying(ParticleSystem ps)
     {
-        if (staircaseObject != null)
-            staircaseObject.SetActive(true);
-
-        if (ladderObject != null)
-            ladderObject.SetActive(true);
-
-        activationParticles?.Play();
+        if (ps != null && !ps.isPlaying) ps.Play();
     }
 
     // ─── Gizmos ───────────────────────────────────────────────────────────────

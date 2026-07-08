@@ -12,12 +12,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9b90b25f61415d4db0535909b6c734a, type: 3}
   m_Name: EnemyMeleeConfig
   m_EditorClassIdentifier: Assembly-CSharp::EnemyChaserConfig
+  maxHealth: 60
+  invincibilitySeconds: 0.25
   aggroRadius: 15
   loseTargetRadiusMultiplier: 1.2
   playerMask:
     serializedVersion: 2
     m_Bits: 8
   moveSpeed: 3.5
+  retargetInterval: 0.2
+  switchTargetDistanceBias: 0.35
+  maxKnockbackSpeed: 4
+  knockbackDecay: 10
+  knockReceiverDecay: 20
+  separationRadius: 1
+  separationForce: 4
+  currencyReward: 5
+  energyReward: 10
+  ammoDropChance: 0.7
+  ammoAmount: 8
   stopDistance: 0.9
   repathInterval: 0.05
   attackRange: 1.2
@@ -29,5 +42,3 @@ MonoBehaviour:
   damageTargetMask:
     serializedVersion: 2
     m_Bits: 8
-  retargetInterval: 0.2
-  switchTargetDistanceBias: 0.35
