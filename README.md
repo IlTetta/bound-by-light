@@ -34,9 +34,9 @@ game projects.
 
 ## Repository structure
 
-- `Assets/_Project/` — all first-party content: gameplay **scripts**, scenes, prefabs,
+- `Assets/_Project/` - all first-party content: gameplay **scripts**, scenes, prefabs,
   materials and level art.
-- `Documentation/` — design & technical documents (see below).
+- `Documentation/` - design & technical documents (see below).
 - Other folders under `Assets/` are third-party packs from the Unity Asset Store (free).
 
 ## Documentation
