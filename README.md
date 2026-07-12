@@ -14,7 +14,7 @@ cathedral, solve light-based puzzles and progress together. Neither can make it 
 ## About the project
 
 This game was developed for the **Online Game Design** course at the
-**Università degli Studi di Milano**, by **Team Juggernaut**.
+**Università degli Studi di Milano**, by **Team Juggernaut** (main Game Programmer and Game Designer).
 The project took part in **New Game Designer 2026**, a showcase/competition for student
 game projects.
 
