@@ -29,7 +29,7 @@ public class LightReceiver : NetworkBehaviour
     {
         // Qui la rete è già attiva: PuzzleRoomManager è in scena
         if (puzzleManager == null)
-            puzzleManager = FindObjectOfType<PuzzleRoomManager>();
+            puzzleManager = FindFirstObjectByType<PuzzleRoomManager>();
 
         if (puzzleManager == null)
             Debug.LogWarning("[LightReceiver] PuzzleRoomManager non trovato!");

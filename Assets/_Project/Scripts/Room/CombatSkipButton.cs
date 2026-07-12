@@ -35,14 +35,14 @@ public class CombatSkipButton : NetworkBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!IsLocalPlayer(other)) return;
+        if (!IsLocalPlayerCollider(other)) return;
         _localPlayerInside = true;
         Debug.Log("[CombatSkipButton] Player vicino al pulsante — premi X per saltare il combattimento.");
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (!IsLocalPlayer(other)) return;
+        if (!IsLocalPlayerCollider(other)) return;
         _localPlayerInside = false;
     }
 
@@ -60,7 +60,7 @@ public class CombatSkipButton : NetworkBehaviour
         room?.SetCleared();
     }
 
-    private static bool IsLocalPlayer(Collider other)
+    private static bool IsLocalPlayerCollider(Collider other)
     {
         var netObj = other.GetComponentInParent<NetworkObject>();
         return netObj != null && netObj.IsOwner;

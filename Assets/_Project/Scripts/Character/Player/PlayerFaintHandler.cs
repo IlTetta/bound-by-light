@@ -93,6 +93,11 @@ public class PlayerFaintHandler : NetworkBehaviour
 
         _isFainted.OnValueChanged += OnIsFaintedChanged;
 
+        // La morte del player (CurrentHealth == 0) fa scattare il faint. Il core
+        // HealthNetwork è role-agnostic e non conosce il faint: ci sottoscriviamo qui.
+        if (_health != null)
+            _health.OnServerDeath += TriggerFaint;
+
         if (_isFainted.Value)
             ApplyFaintedState(true);
     }
@@ -100,6 +105,9 @@ public class PlayerFaintHandler : NetworkBehaviour
     public override void OnNetworkDespawn()
     {
         _isFainted.OnValueChanged -= OnIsFaintedChanged;
+
+        if (_health != null)
+            _health.OnServerDeath -= TriggerFaint;
     }
 
     private void Update()
@@ -193,7 +201,7 @@ public class PlayerFaintHandler : NetworkBehaviour
     /// Resetta il progresso di rianimazione server-side.
     /// Chiamato quando il compagno rilascia H o esce dal raggio prima del completamento.
     /// </summary>
-    [ServerRpc(RequireOwnership = false)]
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
     private void ResetReviveProgressServerRpc()
     {
         _reviveProgress.Value = 0f;
@@ -203,8 +211,8 @@ public class PlayerFaintHandler : NetworkBehaviour
     /// Chiamato dal client owner del compagno vivo (al massimo 10 volte/s grazie al throttle).
     /// Riceve il deltaTime accumulato così il server accumula esattamente il tempo reale trascorso.
     /// </summary>
-    [ServerRpc(RequireOwnership = false)]
-    private void TryReviveNearbyServerRpc(float deltaTime, ServerRpcParams rpcParams = default)
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    private void TryReviveNearbyServerRpc(float deltaTime)
     {
         if (!IsServer) return;
         if (!_isFainted.Value) return;

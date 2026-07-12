@@ -26,9 +26,6 @@ public sealed class PlayerSpawnServer : MonoBehaviour
     [Tooltip("Prefab del GameManager (NetworkObject). Spawnato quando il server parte.")]
     [SerializeField] private NetworkObject gameManagerPrefab;
 
-    [Tooltip("Prefab dell'EnemyManager (NetworkObject). Spawnato quando il server parte.")]
-    [SerializeField] private NetworkObject enemyManagerPrefab;
-
     [Header("Player")]
     [Tooltip("Prefab per ciascun player in ordine di connessione. Indice 0 = Twin1 (primo client), Indice 1 = Twin2 (secondo client).")]
     [SerializeField] private NetworkObject[] playerPrefabs;
@@ -92,8 +89,7 @@ public sealed class PlayerSpawnServer : MonoBehaviour
         _spawnedPlayers.Clear();
         _clientPrefabIndex.Clear();
         _waitingForReconnect = false;
-        SpawnManager(gameManagerPrefab,  "GameManager");
-        SpawnManager(enemyManagerPrefab, "EnemyManager");
+        SpawnManager(gameManagerPrefab, "GameManager");
     }
 
     private void HandleServerStopped(bool wasShutdown)

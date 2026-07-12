@@ -2,9 +2,9 @@ using Unity.Netcode;
 using UnityEngine;
 
 /// <summary>
-/// Sensore di percezione 3D per i nemici.
-/// Sostituisce EnemyPerceptionSensor2D: usa Physics.OverlapSphere invece di Physics2D.
-/// Stessa API pubblica (FindClosestTarget, TryFindClosestClientId).
+/// Sensore di percezione 3D per i nemici (Physics.OverlapSphere).
+/// API pubblica: FindClosestTarget, TryFindClosestClientId.
+/// Ignora i bersagli a terra/morti (player fainted = HP 0 = IsDead).
 /// </summary>
 public sealed class EnemyPerceptionSensor3D : MonoBehaviour
 {
@@ -32,6 +32,11 @@ public sealed class EnemyPerceptionSensor3D : MonoBehaviour
 
             var no = col.GetComponentInParent<NetworkObject>();
             if (no == null || !no.IsSpawned) continue;
+
+            // Salta i bersagli a terra o morti (player fainted = HP 0 = IsDead):
+            // il nemico deve ignorarli e puntare un player ancora in piedi.
+            var targetHealth = no.GetComponent<HealthNetwork>();
+            if (targetHealth != null && targetHealth.IsDead) continue;
 
             float d = Vector3.Distance(origin, no.transform.position);
             if (d < best) { best = d; bestT = no.transform; }
@@ -63,6 +68,10 @@ public sealed class EnemyPerceptionSensor3D : MonoBehaviour
 
             var no = col.GetComponentInParent<NetworkObject>();
             if (no == null || !no.IsSpawned) continue;
+
+            // Salta i bersagli a terra o morti (player fainted = HP 0 = IsDead).
+            var targetHealth = no.GetComponent<HealthNetwork>();
+            if (targetHealth != null && targetHealth.IsDead) continue;
 
             float d = Vector3.Distance(origin, no.transform.position);
             if (d < best) { best = d; bestId = no.OwnerClientId; found = true; }

@@ -25,6 +25,11 @@ public class RadialProgressRing : MonoBehaviour
     [Tooltip("Altezza da terra, per evitare z-fighting col pavimento.")]
     [SerializeField] private float groundOffset = 0.06f;
 
+    [Tooltip("Sposta il centro dell'anello rispetto al transform. Serve quando il pivot " +
+             "dell'oggetto (es. pozzo con origine sballata) non è al centro visivo: " +
+             "nudgia X/Z finché l'anello è centrato sotto il modello.")]
+    [SerializeField] private Vector3 centerOffset = Vector3.zero;
+
     [SerializeField] private float baseWidth     = 0.08f;
     [SerializeField] private float progressWidth = 0.16f;
 
@@ -139,7 +144,9 @@ public class RadialProgressRing : MonoBehaviour
     {
         if (!_visible) return;
 
-        Vector3 center = transform.position + Vector3.up * groundOffset;
+        Vector3 center = transform.position
+                       + transform.rotation * centerOffset
+                       + Vector3.up * groundOffset;
 
         _baseRing.transform.rotation    = Flat;
         _progressArc.transform.rotation = Flat;
@@ -180,4 +187,23 @@ public class RadialProgressRing : MonoBehaviour
                 Mathf.Cos(ang) * radius, 0f, Mathf.Sin(ang) * radius));
         }
     }
+
+    // ─── Preview in editor ──────────────────────────────────────────────────────
+    // I LineRenderer si creano solo a runtime, quindi in edit mode l'anello non si
+    // vede. Questa preview disegna i due cerchi alla posizione REALE (centerOffset +
+    // groundOffset inclusi) così puoi centrarlo dalla Scene senza entrare in Play.
+#if UNITY_EDITOR
+    private void OnDrawGizmosSelected()
+    {
+        Vector3 center = transform.position
+                       + transform.rotation * centerOffset
+                       + Vector3.up * groundOffset;
+
+        UnityEditor.Handles.color = new Color(baseColor.r, baseColor.g, baseColor.b, 0.9f);
+        UnityEditor.Handles.DrawWireDisc(center, Vector3.up, baseRadius);
+
+        UnityEditor.Handles.color = new Color(progressColor.r, progressColor.g, progressColor.b, 0.9f);
+        UnityEditor.Handles.DrawWireDisc(center, Vector3.up, progressRadius);
+    }
+#endif
 }

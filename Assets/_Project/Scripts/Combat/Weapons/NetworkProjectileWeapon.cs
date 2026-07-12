@@ -214,23 +214,9 @@ public class NetworkProjectileWeapon : NetworkBehaviour, IRangedWeapon
             return;
         }
 
-        // Fallback 2D
-        Projectile projectileScript = projectileGo.GetComponent<Projectile>();
-        if (projectileScript == null)
-        {
-            Debug.LogError($"[NetworkProjectileWeapon] '{projectilePrefab.name}' non ha Projectile né Projectile3D!");
-            netObj.Despawn(true);
-            return;
-        }
-
-        // NetworkObjectId (univoco per oggetto) evita il falso-positivo host vs nemici (entrambi OwnerClientId=0)
-        projectileScript.SetOwner(NetworkObject.NetworkObjectId);
-        projectileScript.Initialize(rotation * Vector2.right);
-        projectileScript.SetDamage(damage);
-        projectileScript.SetFiredByEnemy(_ownerIsEnemy);
-
-        // 5. Feedbacks
-        TriggerSpawnFeedbacks(spawnPoint);
+        // Nessun Projectile3D sul prefab: errore (il progetto è interamente 3D).
+        Debug.LogError($"[NetworkProjectileWeapon] Il prefab '{projectilePrefab.name}' non ha un componente Projectile3D!");
+        netObj.Despawn(true);
     }
 
     public void SetDamageOverride(int dmg) => damage = dmg;
@@ -291,7 +277,7 @@ public class NetworkProjectileWeapon : NetworkBehaviour, IRangedWeapon
     /// in contemporanea a WeaponAmmo.RequestReloadServerRpc().
     /// Blocca CanFire per la durata del reloadTime.
     /// </summary>
-    [ServerRpc(RequireOwnership = false)]
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
     public void BeginReloadServerRpc()
     {
         if (!IsServer || _isReloading) return;

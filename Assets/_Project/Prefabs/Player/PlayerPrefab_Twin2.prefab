@@ -3007,7 +3007,6 @@ GameObject:
   - component: {fileID: 8164416979492557555}
   - component: {fileID: 6943304193672375216}
   - component: {fileID: 2815049317412986784}
-  - component: {fileID: 1665990219865741176}
   - component: {fileID: 8180504754555742394}
   - component: {fileID: 990434568114000341}
   - component: {fileID: 8750600567523401583}
@@ -3019,6 +3018,7 @@ GameObject:
   - component: {fileID: 4060807003596290270}
   - component: {fileID: 2063286178710794611}
   - component: {fileID: 8568349561843418396}
+  - component: {fileID: 2770953601033153592}
   m_Layer: 3
   m_Name: PlayerPrefab_Twin2
   m_TagString: Player
@@ -3139,9 +3139,6 @@ MonoBehaviour:
   maxHealth: 100
   invincibilitySeconds: 0.25
   despawnOnDeath: 0
-  shakeCameraOnHit: 1
-  deathSfxEmitter: {fileID: 0}
-  deathVfxPrefab: {fileID: 0}
   hitFlash: {fileID: 2063286178710794611}
   CurrentHealth:
     m_InternalValue: 0
@@ -3530,20 +3527,6 @@ MonoBehaviour:
   deadZone: 0.05
   impactDecay: 20
   rotationSpeed: 720
---- !u!114 &1665990219865741176
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4848108505839494090}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d344ac35003dd148bd93a87709be221, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::KnockReceiver3D
-  ShowTopMostFoldoutHeaderGroup: 1
-  decay: 20
 --- !u!114 &8180504754555742394
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3762,6 +3745,19 @@ MonoBehaviour:
   pulseSpeed: 2.2
   progressSmoothing: 12
   lineMaterial: {fileID: 2100000, guid: 4539910f2e704194a838c60e277bb72b, type: 2}
+--- !u!114 &2770953601033153592
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4848108505839494090}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed6ee64e4788d2449b1bc8d2cc1a8a40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHitReaction
+  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!1 &4853128843897324944
 GameObject:
   m_ObjectHideFlags: 0

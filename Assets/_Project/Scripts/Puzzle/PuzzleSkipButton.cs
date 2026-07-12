@@ -34,14 +34,14 @@ public class PuzzleSkipButton : NetworkBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!IsLocalPlayer(other)) return;
+        if (!IsLocalPlayerCollider(other)) return;
         _localPlayerInside = true;
         Debug.Log("[PuzzleSkipButton] Player vicino al pulsante — premi P per saltare il puzzle.");
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (!IsLocalPlayer(other)) return;
+        if (!IsLocalPlayerCollider(other)) return;
         _localPlayerInside = false;
     }
 
@@ -57,7 +57,7 @@ public class PuzzleSkipButton : NetworkBehaviour
         puzzleManager.ForceComplete();
     }
 
-    private static bool IsLocalPlayer(Collider other)
+    private static bool IsLocalPlayerCollider(Collider other)
     {
         var netObj = other.GetComponentInParent<NetworkObject>();
         return netObj != null && netObj.IsOwner;

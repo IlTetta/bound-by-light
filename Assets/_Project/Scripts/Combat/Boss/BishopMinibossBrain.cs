@@ -111,7 +111,7 @@ public sealed class BishopMinibossBrain : NetworkBehaviour, IEnemyEntity
         // gira dopo tutti gli Awake.
         if (config != null)
         {
-            config.ApplyTo(gameObject);   // HealthNetwork, EnemyMotor3D, KnockReceiver3D
+            config.ApplyTo(gameObject);   // HealthNetwork, EnemyMotor3D, EnemyAmmoDropper
             ApplyConfig();                // campi interni del brain
         }
         else
@@ -160,6 +160,10 @@ public sealed class BishopMinibossBrain : NetworkBehaviour, IEnemyEntity
 
     public override void OnNetworkSpawn()
     {
+        // Navigazione (NavMeshAgent) attiva solo sul server; i client replicano
+        // la posizione via NetworkTransform.
+        if (_motor != null) _motor.ConfigureNavigation(IsServer);
+
         if (!IsServer) { enabled = false; return; }
 
         ConfigureHitbox(_smashHitbox, _smashDamage, _smashKnockback);
@@ -527,7 +531,6 @@ public sealed class BishopMinibossBrain : NetworkBehaviour, IEnemyEntity
     // Senza questa implementazione _ownerIsEnemy = false e i bolt non colpirebbero i player.
 
     public bool  IsFlying       => false;
-    public bool  IsDiruptor     => false;
     public int   CurrencyReward => _currencyReward;
     public float EnergyReward   => _energyReward;
 

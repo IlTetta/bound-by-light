@@ -221,7 +221,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 2998728747
+  GlobalObjectIdHash: 650967012
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -562,7 +562,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 2378010154
+  GlobalObjectIdHash: 4092192850
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -1212,7 +1212,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 3371956033
+  GlobalObjectIdHash: 4179944207
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -1779,7 +1779,6 @@ GameObject:
   - component: {fileID: 3345304365632046683}
   - component: {fileID: 7216120508580929071}
   - component: {fileID: 8863515982248391926}
-  - component: {fileID: 1545221399977359767}
   m_Layer: 0
   m_Name: LadderTrigger
   m_TagString: Untagged
@@ -1835,7 +1834,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1479817767
+  GlobalObjectIdHash: 2543886976
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -1875,29 +1874,6 @@ MonoBehaviour:
   lockedEmission: {r: 0.75, g: 0.075, b: 0.075, a: 1.5}
   idleEmission: {r: 0.1, g: 1.1, b: 0.3, a: 2}
   readyEmission: {r: 0.90000004, g: 6, b: 2.4, a: 6}
---- !u!114 &1545221399977359767
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5849667042915440067}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 794dac7f4e8ba7a45a2edc1964c4ae4f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RadialProgressRing
-  baseRadius: 2
-  progressRadius: 1.7
-  groundOffset: 0.06
-  baseWidth: 0.08
-  progressWidth: 0.16
-  baseColor: {r: 0.35, g: 0.85, b: 1, a: 0.35}
-  progressColor: {r: 0.65, g: 0.95, b: 1, a: 0.95}
-  pulseAmount: 0.35
-  pulseSpeed: 2.2
-  smoothing: 12
-  lineMaterial: {fileID: 2100000, guid: 4539910f2e704194a838c60e277bb72b, type: 2}
 --- !u!1 &5959435875331169044
 GameObject:
   m_ObjectHideFlags: 0
@@ -2284,6 +2260,7 @@ GameObject:
   - component: {fileID: 539951971425233115}
   - component: {fileID: 7797255932811226251}
   - component: {fileID: 7482159438532988940}
+  - component: {fileID: 5263133325061928742}
   m_Layer: 13
   m_Name: Well
   m_TagString: Untagged
@@ -2318,7 +2295,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 739848812
+  GlobalObjectIdHash: 3966251457
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -2352,7 +2329,7 @@ MonoBehaviour:
   staircaseObject: {fileID: 4124716615648935216}
   ladderObject: {fileID: 3806990859519972977}
   undergroundDoor: {fileID: 0}
-  progressRing: {fileID: 0}
+  progressRing: {fileID: 5263133325061928742}
   idleVfx: {fileID: 0}
   chargingVfx: {fileID: 0}
   activationVfx: {fileID: 1623298396792479162, guid: 6a08bf3f7984d534fac13f379cc2f82c, type: 3}
@@ -2378,6 +2355,30 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.3814745, y: 2.9519691, z: 2.4657295}
   m_Center: {x: -0.10710637, y: 0.97598284, z: -0.81390285}
+--- !u!114 &5263133325061928742
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8783564676199164997}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 794dac7f4e8ba7a45a2edc1964c4ae4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RadialProgressRing
+  baseRadius: 2
+  progressRadius: 1.7
+  groundOffset: 0.11
+  centerOffset: {x: -0.37, y: 1.38, z: -2.42}
+  baseWidth: 0.08
+  progressWidth: 0.16
+  baseColor: {r: 0.35, g: 0.85, b: 1, a: 0.35}
+  progressColor: {r: 0.65, g: 0.95, b: 1, a: 0.95}
+  pulseAmount: 0.35
+  pulseSpeed: 2.2
+  smoothing: 12
+  lineMaterial: {fileID: 2100000, guid: 4539910f2e704194a838c60e277bb72b, type: 2}
 --- !u!1001 &6602096144694355752
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2585,7 +2586,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 2940810749
+  GlobalObjectIdHash: 2924723806
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -2675,7 +2676,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1330313534910793408, guid: 095f42af919925b479e5e294ffc547c8, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 3340422089
+      value: 3003280883
       objectReference: {fileID: 0}
     - target: {fileID: 1330313534910793408, guid: 095f42af919925b479e5e294ffc547c8, type: 3}
       propertyPath: InScenePlacedSourceGlobalObjectIdHash

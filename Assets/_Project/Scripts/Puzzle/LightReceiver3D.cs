@@ -38,7 +38,7 @@ public class LightReceiver3D : MonoBehaviour
     private void Start()
     {
         if (puzzleManager == null)
-            puzzleManager = FindObjectOfType<PuzzleRoomManager>();
+            puzzleManager = FindFirstObjectByType<PuzzleRoomManager>();
 
         if (puzzleManager == null)
             Debug.LogWarning("[LightReceiver3D] PuzzleRoomManager non trovato!");

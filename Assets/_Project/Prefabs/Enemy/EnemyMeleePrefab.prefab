@@ -84,19 +84,19 @@ GameObject:
   - component: {fileID: 7226796176546628404}
   - component: {fileID: 3370081026170425444}
   - component: {fileID: 7785795039273126062}
-  - component: {fileID: 4742920100010042046}
   - component: {fileID: -652563041095214025}
   - component: {fileID: 1027608615571772263}
   - component: {fileID: 5291411656031718413}
   - component: {fileID: 5899689154820297746}
   - component: {fileID: 1841960579511321060}
   - component: {fileID: 8984310511077909082}
-  - component: {fileID: 2538147000954666517}
   - component: {fileID: 5707437368201208454}
   - component: {fileID: 8335973827542677978}
   - component: {fileID: 2582074560688654896}
   - component: {fileID: 5786559764808916520}
   - component: {fileID: 2376371937288973574}
+  - component: {fileID: 6456720640796890593}
+  - component: {fileID: 1615443979657888063}
   m_Layer: 7
   m_Name: EnemyMeleePrefab
   m_TagString: Untagged
@@ -231,15 +231,12 @@ MonoBehaviour:
   config: {fileID: 11400000, guid: 4304a09415f772e4995e7c211fd447aa, type: 2}
   sensor: {fileID: 5707437368201208454}
   motor: {fileID: 8984310511077909082}
-  attackTimeline: {fileID: 7785795039273126062}
-  hitbox: {fileID: 96021575689302635}
   modelTransform: {fileID: 0}
-  facingRightY: 0
-  currencyReward: 5
-  energyReward: 10
   animator: {fileID: 5899689154820297746}
   deathLingerSeconds: 3.03
   drawGizmos: 1
+  attackTimeline: {fileID: 7785795039273126062}
+  hitbox: {fileID: 96021575689302635}
 --- !u!114 &7785795039273126062
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -255,18 +252,6 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   phase: 0
   phaseTimer: 0
---- !u!114 &4742920100010042046
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4415500266876859512}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d4bf01940f667e419c89772c7191d4a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyDeathNotifier
 --- !u!114 &-652563041095214025
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -282,10 +267,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   maxHealth: 80
   invincibilitySeconds: 0.25
-  despawnOnDeath: 1
-  shakeCameraOnHit: 0
-  deathSfxEmitter: {fileID: 2582074560688654896}
-  deathVfxPrefab: {fileID: 8782009059513614302, guid: 9bbfb95eb90a55b4484c7534f8356c18, type: 3}
+  despawnOnDeath: 0
   hitFlash: {fileID: 5786559764808916520}
   CurrentHealth:
     m_InternalValue: 0
@@ -315,9 +297,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAmmoDropper
   ShowTopMostFoldoutHeaderGroup: 1
-  dropChance: 0.6
   ammoPickupPrefab: {fileID: 495485428842452785, guid: 238916d0396d4234bbfd59a7580028f4, type: 3}
-  ammoAmount: 5
 --- !u!95 &5899689154820297746
 Animator:
   serializedVersion: 7
@@ -379,27 +359,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5785f6e44a5dedf4e82ef36c45d30be5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMotor3D
-  maxKnockbackSpeed: 4
-  knockbackDecay: 10
-  separationRadius: 1
-  separationForce: 4
-  enemyLayer:
-    serializedVersion: 2
-    m_Bits: 128
---- !u!114 &2538147000954666517
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4415500266876859512}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d344ac35003dd148bd93a87709be221, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::KnockReceiver3D
-  ShowTopMostFoldoutHeaderGroup: 1
-  decay: 20
+  repathInterval: 0.15
 --- !u!114 &5707437368201208454
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -506,6 +466,42 @@ MonoBehaviour:
   hideDelay: 3
   alwaysVisible: 0
   fillSmoothing: 14
+--- !u!114 &6456720640796890593
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4415500266876859512}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc9313594da96e64e9a2f1d8b7ea6e70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDeathFx
+  deathSfxEmitter: {fileID: 2582074560688654896}
+  deathVfxPrefab: {fileID: 8782009059513614302, guid: 9bbfb95eb90a55b4484c7534f8356c18, type: 3}
+--- !u!195 &1615443979657888063
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4415500266876859512}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.81
+  m_Speed: 3.5
+  m_Acceleration: 40
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2.15
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 3
 --- !u!1001 &1225316133546847492
 PrefabInstance:
   m_ObjectHideFlags: 0

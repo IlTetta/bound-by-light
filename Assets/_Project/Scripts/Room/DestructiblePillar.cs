@@ -86,12 +86,9 @@ public class DestructiblePillar : NetworkBehaviour
         if (!IsServer) return;
         if (_fractured) return;
 
-        // Le hitbox del boss usano DamageOnTouchNetwork (2D). Controlliamo entrambe
-        // le versioni per essere robusti rispetto a futuri cambi del prefab.
+        // Le hitbox del boss usano DamageOnTouchNetwork3D.
         bool isBossHitbox = other.GetComponent<DamageOnTouchNetwork3D>() != null
-                         || other.GetComponentInParent<DamageOnTouchNetwork3D>() != null
-                         || other.GetComponent<DamageOnTouchNetwork>() != null
-                         || other.GetComponentInParent<DamageOnTouchNetwork>() != null;
+                         || other.GetComponentInParent<DamageOnTouchNetwork3D>() != null;
 
         if (!isBossHitbox) return;
 

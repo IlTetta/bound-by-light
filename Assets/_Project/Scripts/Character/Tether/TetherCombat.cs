@@ -109,7 +109,7 @@ public class TetherCombat : NetworkBehaviour
             var col = _overlapBuffer[i];
             IEnemyEntity enemy = col.GetComponentInParent<IEnemyEntity>();
             if (enemy == null) continue;
-            if (enemy.IsFlying || enemy.IsDiruptor) continue;
+            if (enemy.IsFlying) continue;
 
             _hitThisFrame.Add(enemy);
 

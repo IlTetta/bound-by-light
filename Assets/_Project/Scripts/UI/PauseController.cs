@@ -41,14 +41,14 @@ public class PauseController : NetworkBehaviour
 
     // ─── ServerRpc ────────────────────────────────────────────────────────────
 
-    /// <summary>Chiunque può richiederlo — RequireOwnership=false perché è uno scene object.</summary>
-    [ServerRpc(RequireOwnership = false)]
+    /// <summary>Chiunque può richiederlo (InvokePermission.Everyone) — è uno scene object.</summary>
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
     private void RequestTogglePauseServerRpc()
     {
         _networkPaused.Value = !_networkPaused.Value;
     }
 
-    [ServerRpc(RequireOwnership = false)]
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
     private void RequestSetPausedServerRpc(bool paused)
     {
         _networkPaused.Value = paused;

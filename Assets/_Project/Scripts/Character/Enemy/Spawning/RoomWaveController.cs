@@ -124,6 +124,10 @@ public class RoomWaveController : MonoBehaviour
     private bool _allCleared        = false;
     private bool _waitingForPlayers = false; // true mentre aspettiamo abbastanza client
 
+    // Nemici spawnati da QUESTA stanza. Usati da ForceReset/ForceComplete per agire
+    // solo sui propri nemici (niente scan globale che toccherebbe altre stanze).
+    private readonly List<HealthNetwork> _spawnedEnemies = new();
+
     // ─── Unity ────────────────────────────────────────────────────────────────
 
     private void Start()
@@ -197,6 +201,7 @@ public class RoomWaveController : MonoBehaviour
         _aliveEnemies     = 0;
         _wavesStarted     = false;
         _allCleared       = false;
+        _spawnedEnemies.Clear();
 
         if (_waitingForPlayers && NetworkManager.Singleton != null)
         {
@@ -238,15 +243,14 @@ public class RoomWaveController : MonoBehaviour
     {
         if (!NetworkManager.Singleton.IsServer) return;
 
-        // Despawna tutti i nemici ancora vivi (esclusi i player).
-        // GetComponent è chiamato solo due volte per oggetto e solo al momento del reset:
-        // il costo è accettabile rispetto a mantenere un registro separato.
-        foreach (var health in FindObjectsByType<HealthNetwork>(FindObjectsSortMode.None))
+        // Despawna solo i nemici che QUESTA stanza ha spawnato (nessuno scan globale:
+        // non tocca i nemici di altre stanze). La lista viene ripulita in ResetWaveState.
+        foreach (var health in _spawnedEnemies)
         {
+            if (health == null) continue;
             var netObj = health.GetComponent<Unity.Netcode.NetworkObject>();
-            if (netObj == null || !netObj.IsSpawned) continue;
-            if (health.GetComponent<PlayerFaintHandler>() != null) continue; // skip player
-            netObj.Despawn(true);
+            if (netObj != null && netObj.IsSpawned)
+                netObj.Despawn(true);
         }
 
         ResetWaveState();
@@ -269,12 +273,14 @@ public class RoomWaveController : MonoBehaviour
         _allCleared   = true;
         _wavesStarted = true;
 
-        foreach (var health in FindObjectsByType<HealthNetwork>(FindObjectsSortMode.None))
+        // Uccide solo i nemici di QUESTA stanza. Uccidere fa scattare
+        // OnServerDeath→HandleEnemyDied (che muta la lista): iteriamo su una copia.
+        foreach (var health in _spawnedEnemies.ToArray())
         {
-            if (health.IsDead) continue;
-            if (health.GetComponent<PlayerFaintHandler>() != null) continue;
+            if (health == null || health.IsDead) continue;
             health.ApplyDamageServer(health.MaxHealth + 1, Vector2.zero, 0);
         }
+        _spawnedEnemies.Clear();
 
         Debug.Log($"[RoomWaveController] '{gameObject.name}': completamento forzato (skip button).");
         OnAllWavesCleared?.Invoke();
@@ -343,6 +349,7 @@ public class RoomWaveController : MonoBehaviour
                 if (health != null)
                 {
                     _aliveEnemies++;
+                    _spawnedEnemies.Add(health);
                     health.OnServerDeath += HandleEnemyDied;
                 }
                 else
@@ -380,6 +387,7 @@ public class RoomWaveController : MonoBehaviour
     private void HandleEnemyDied()
     {
         _aliveEnemies--;
+        _spawnedEnemies.RemoveAll(h => h == null || h.IsDead);
         Debug.Log($"[RoomWaveController] Nemico eliminato. Rimasti: {_aliveEnemies}");
 
         // Se ForceComplete() è già in corso, non avviare la wave successiva

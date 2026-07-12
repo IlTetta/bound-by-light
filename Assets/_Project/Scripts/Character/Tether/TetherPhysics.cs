@@ -11,7 +11,7 @@ using UnityEngine;
 ///     applicata tramite AddImpact() sul PlayerMovementMotor2D di ciascun player
 ///
 /// Stiffness alta  → quasi un muro (il movimento volontario non supera maxDist)
-/// Stiffness bassa → corda elastica (il knockback del Disruptive la sfonda momentaneamente)
+/// Stiffness bassa → corda elastica (il knockback la sfonda momentaneamente)
 ///
 /// Gira solo sul server, che invia la forza ai client owner via ClientRpc.
 /// </summary>

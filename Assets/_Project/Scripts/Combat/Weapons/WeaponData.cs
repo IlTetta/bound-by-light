@@ -15,7 +15,7 @@ public class WeaponData : ScriptableObject
     public Sprite icon;
 
     [Header("Projectile")]
-    [Tooltip("Prefab del proiettile (deve avere NetworkObject + Projectile).")]
+    [Tooltip("Prefab del proiettile (deve avere NetworkObject + Projectile3D).")]
     public GameObject projectilePrefab;
     public int projectilesPerShot = 1;
     [Range(0f, 45f)]

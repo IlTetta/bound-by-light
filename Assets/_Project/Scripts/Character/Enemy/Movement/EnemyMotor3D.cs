@@ -1,25 +1,45 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 /// <summary>
-/// Motore di movimento 3D per i nemici.
-/// Sostituisce EnemyMotor2D: stessa API pubblica (MoveTowards, Stop, AddKnockback).
-/// Il nemico si muove sul piano XZ. Y è bloccata alla quota di spawn.
+/// Motore di movimento 3D dei nemici basato su NavMeshAgent (pathfinding attorno a
+/// muri e ostacoli). API pubblica invariata (MoveTowards, Stop, Position, AddKnockback):
+/// i brain non sanno che sotto c'è la navmesh.
+///
+/// MULTIPLAYER: la navigazione gira SOLO sul server (l'agent è disabilitato sui client
+/// via <see cref="ConfigureNavigation"/>). La posizione viene replicata a tutti i client
+/// dal NetworkTransform del nemico (server-authority): una sola simulazione, gli altri
+/// replicano → nessun rischio di desync da pathfinding indipendenti.
+///
+/// Il Rigidbody è reso kinematic: il transform lo muove l'agent, la fisica non deve
+/// interferire. Il collider serve solo per i trigger (venire colpiti). L'anti-overlap
+/// tra nemici è affidato all'avoidance integrata del NavMeshAgent (impostabile sul prefab).
 /// </summary>
 [RequireComponent(typeof(Rigidbody))]
-public sealed class EnemyMotor3D : MonoBehaviour
+[RequireComponent(typeof(NavMeshAgent))]
+public sealed class EnemyMotor3D : MonoBehaviour, IKnockbackReceiver
 {
-    // Stat di design: NON serializzate. Arrivano da EnemyBaseConfig via ConfigureStats(),
-    // chiamata dal brain in Awake. Tenerle anche nell'Inspector significherebbe due
-    // sorgenti per lo stesso numero, destinate prima o poi a divergere.
-    // I valori qui sotto sono solo il fallback se il brain non ha un config.
+    /// <summary>IKnockbackReceiver: HealthNetwork instrada qui il knockback (server-side).</summary>
+    public void ApplyKnockback(Vector2 impulseXZ) => AddKnockback(impulseXZ);
+
+    [Header("Ripathing")]
+    [Tooltip("Intervallo minimo (s) tra due ricalcoli del path. Throttla SetDestination, " +
+             "che è costoso. Il path viene comunque ricalcolato subito se il target si sposta molto.")]
+    [SerializeField] private float repathInterval = 0.15f;
+
+    // Stat di design: NON serializzate. Arrivano da EnemyBaseConfig via ConfigureStats().
+    // La separazione anti-overlap ora è gestita dall'avoidance del NavMeshAgent (sul prefab),
+    // quindi separationRadius/Force del config sono ignorati qui.
     private float maxKnockbackSpeed = 4f;
     private float knockbackDecay    = 10f;
-    private float separationRadius  = 1.0f;
-    private float separationForce   = 4f;
 
-    [Header("Separazione (anti-overlap)")]
-    [Tooltip("Layer dei nemici. Non è una stat di bilanciamento: resta sul prefab.")]
-    [SerializeField] private LayerMask enemyLayer;
+    private Rigidbody    _rb;
+    private NavMeshAgent _agent;
+    private bool         _isServer;
+
+    private Vector3 _knockbackVelocity;
+    private float   _repathTimer;
+    private Vector3 _lastDestination;
 
     /// <summary>Applica le stat dal config del nemico. Da chiamare in Awake.</summary>
     public void ConfigureStats(float newMaxKnockbackSpeed, float newKnockbackDecay,
@@ -27,96 +47,79 @@ public sealed class EnemyMotor3D : MonoBehaviour
     {
         maxKnockbackSpeed = newMaxKnockbackSpeed;
         knockbackDecay    = newKnockbackDecay;
-        separationRadius  = newSeparationRadius;
-        separationForce   = newSeparationForce;
+        // separationRadius/Force: gestiti dall'avoidance del NavMeshAgent (Radius/Priority sul prefab).
     }
-
-    private Rigidbody _rb;
-    private float     _fixedY;
-
-    private Vector3 _aiVelocity;
-    private Vector3 _knockbackVelocity;
 
     private void Awake()
     {
-        _rb              = GetComponent<Rigidbody>();
+        _rb = GetComponent<Rigidbody>();
+        _rb.isKinematic = true;   // l'agent muove il transform; la fisica non interferisce
         _rb.useGravity  = false;
-        _rb.constraints = RigidbodyConstraints.FreezePositionY
-                        | RigidbodyConstraints.FreezeRotationX
-                        | RigidbodyConstraints.FreezeRotationY
-                        | RigidbodyConstraints.FreezeRotationZ;
-        _fixedY = transform.position.y;
+
+        _agent = GetComponent<NavMeshAgent>();
+        _agent.updateRotation = false; // il facing lo gestisce il brain sul modelTransform
+        _agent.enabled = false;        // abilitato solo sul server (ConfigureNavigation)
+    }
+
+    /// <summary>
+    /// Attiva la navigazione solo sul server. Sui client l'agent resta spento:
+    /// la posizione arriva dal NetworkTransform.
+    /// </summary>
+    public void ConfigureNavigation(bool isServer)
+    {
+        _isServer = isServer;
+        if (_agent != null) _agent.enabled = isServer;
     }
 
     private void FixedUpdate()
     {
+        if (!_isServer || _agent == null || !_agent.enabled || !_agent.isOnNavMesh) return;
+
         float dt = Time.fixedDeltaTime;
 
-        _knockbackVelocity = Vector3.MoveTowards(
-            _knockbackVelocity, Vector3.zero, knockbackDecay * dt);
-
-        Vector3 total = _aiVelocity + _knockbackVelocity + ComputeSeparation();
-
-        if (total.sqrMagnitude > 0.0001f)
-        {
-            Vector3 next = _rb.position + total * dt;
-            next.y = _fixedY;
-            _rb.MovePosition(next);
-        }
+        // Knockback: decade e viene applicato con agent.Move, che resta sulla navmesh
+        // (non spinge il nemico dentro i muri).
+        _knockbackVelocity = Vector3.MoveTowards(_knockbackVelocity, Vector3.zero, knockbackDecay * dt);
+        if (_knockbackVelocity.sqrMagnitude > 0.0001f)
+            _agent.Move(_knockbackVelocity * dt);
     }
 
-    private Vector3 ComputeSeparation()
-    {
-        if (separationRadius <= 0f) return Vector3.zero;
+    // ─── API Pubblica (invariata per i brain) ──────────────────────────────────
 
-        Collider[] neighbors = Physics.OverlapSphere(
-            _rb.position, separationRadius, enemyLayer);
+    public Vector3 Position => transform.position;
 
-        Vector3 push = Vector3.zero;
-
-        foreach (var col in neighbors)
-        {
-            if (col.attachedRigidbody == _rb) continue;
-
-            Vector3 toMe = _rb.position - col.transform.position;
-            toMe.y = 0f; // solo piano XZ
-            float dist = toMe.magnitude;
-
-            if (dist < 0.001f) { push += Vector3.right; continue; }
-
-            float overlap = separationRadius - dist;
-            if (overlap > 0f)
-                push += toMe.normalized * overlap;
-        }
-
-        return push.sqrMagnitude > 0.0001f
-            ? push.normalized * separationForce
-            : Vector3.zero;
-    }
-
-    // ─── API Pubblica ─────────────────────────────────────────────────────────
-
-    public Vector3 Position => _rb.position;
-
-    /// <summary>Muove il nemico verso targetPos (XZ) alla velocità data.</summary>
+    /// <summary>Instrada il nemico verso targetPos calcolando un path sulla navmesh.</summary>
     public void MoveTowards(Vector3 targetPos, float speed, float dt)
     {
-        Vector3 dir = targetPos - _rb.position;
-        dir.y = 0f;
+        if (!_isServer || _agent == null || !_agent.enabled || !_agent.isOnNavMesh) return;
 
-        if (dir.sqrMagnitude < 0.0001f) { Stop(); return; }
+        _agent.speed     = speed;
+        _agent.isStopped = false;
 
-        _aiVelocity = dir.normalized * speed;
+        // Throttle di SetDestination (costoso): ricalcola a intervalli, o subito se il
+        // target si è spostato di oltre ~0.5 unità.
+        _repathTimer -= dt;
+        if (_repathTimer <= 0f || (targetPos - _lastDestination).sqrMagnitude > 0.25f)
+        {
+            _repathTimer     = repathInterval;
+            _lastDestination = targetPos;
+            _agent.SetDestination(targetPos);
+        }
     }
 
     /// <summary>Compatibilità con brain che passano Vector2 (X,Z).</summary>
     public void MoveTowards(Vector2 targetXZ, float speed, float dt)
-        => MoveTowards(new Vector3(targetXZ.x, _fixedY, targetXZ.y), speed, dt);
+        => MoveTowards(new Vector3(targetXZ.x, transform.position.y, targetXZ.y), speed, dt);
 
     public void Stop()
     {
-        _aiVelocity        = Vector3.zero;
-        _rb.linearVelocity = Vector3.zero;
+        if (!_isServer || _agent == null || !_agent.enabled) return;
+        if (_agent.isOnNavMesh)
+        {
+            _agent.isStopped = true;
+            _agent.velocity  = Vector3.zero;
+        }
+        _repathTimer = 0f; // il prossimo MoveTowards ricalcola subito
     }
 
     public void AddKnockback(Vector2 impulse)

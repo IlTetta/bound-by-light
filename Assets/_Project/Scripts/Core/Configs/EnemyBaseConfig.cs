@@ -2,7 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// Stat di design comuni a tutti i nemici. Classe base dei config specifici
-/// (EnemyChaserConfig, EnemyRangedConfig, EnemyDisruptiveConfig).
+/// (EnemyChaserConfig, EnemyRangedConfig).
 ///
 /// REGOLA: qui stanno solo i NUMERI che si bilanciano. I riferimenti a componenti,
 /// prefab, animator ed emitter restano sul prefab — sono "com'è fatto" il nemico,
@@ -37,9 +37,6 @@ public abstract class EnemyBaseConfig : ScriptableObject
     public float maxKnockbackSpeed = 4f;
     public float knockbackDecay    = 10f;
 
-    [Tooltip("Decadimento dell'impulso su KnockReceiver3D.")]
-    public float knockReceiverDecay = 20f;
-
     [Header("Separazione (anti-overlap)")]
     public float separationRadius = 1.0f;
     public float separationForce  = 4f;
@@ -66,9 +63,6 @@ public abstract class EnemyBaseConfig : ScriptableObject
 
         enemy.GetComponent<EnemyMotor3D>()
             ?.ConfigureStats(maxKnockbackSpeed, knockbackDecay, separationRadius, separationForce);
-
-        enemy.GetComponent<KnockReceiver3D>()
-            ?.ConfigureStats(knockReceiverDecay);
 
         enemy.GetComponent<EnemyAmmoDropper>()
             ?.ConfigureStats(ammoDropChance, ammoAmount);

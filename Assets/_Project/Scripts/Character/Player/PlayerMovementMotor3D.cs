@@ -8,9 +8,12 @@ using Unity.Netcode;
 /// Stessa API pubblica: SetMoveInput, AddImpact, SetTetherForce, SetLocked.
 /// </summary>
 [RequireComponent(typeof(Rigidbody))]
-public sealed class PlayerMovementMotor3D : NetworkBehaviour
+public sealed class PlayerMovementMotor3D : NetworkBehaviour, IKnockbackReceiver
 {
     public enum MoveMode { Free, Strict4, Strict8 }
+
+    /// <summary>IKnockbackReceiver: HealthNetwork instrada qui il knockback (owner-side).</summary>
+    public void ApplyKnockback(Vector2 impulseXZ) => AddImpact(impulseXZ);
 
     [Header("Tuning")]
     [SerializeField] private MoveMode mode        = MoveMode.Free;
@@ -59,10 +62,11 @@ public sealed class PlayerMovementMotor3D : NetworkBehaviour
         }
     }
 
-    private void OnDestroy()
+    public override void OnDestroy()
     {
         if (!IsSpawned)
             CoopCameraController.Instance?.UnregisterPlayer(transform);
+        base.OnDestroy();
     }
 
     public override void OnNetworkSpawn()

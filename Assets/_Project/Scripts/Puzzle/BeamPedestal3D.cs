@@ -49,7 +49,7 @@ public class BeamPedestal3D : MonoBehaviour
 
     private void TryFindEmitter()
     {
-        emitter = FindObjectOfType<PuzzleEmitter3D>();
+        emitter = FindFirstObjectByType<PuzzleEmitter3D>();
         if (emitter != null) CancelInvoke(nameof(TryFindEmitter));
     }
 

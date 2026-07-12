@@ -332,11 +332,12 @@ GameObject:
   - component: {fileID: 1787099135899277124}
   - component: {fileID: 7329125220017243617}
   - component: {fileID: 221754453739642766}
-  - component: {fileID: 7411301675834358077}
   - component: {fileID: 8080090428621550567}
   - component: {fileID: 8623496746779532416}
   - component: {fileID: -1622493305807909306}
   - component: {fileID: 3003415908597732173}
+  - component: {fileID: 8203075160494308856}
+  - component: {fileID: 1234070525176856298}
   m_Layer: 7
   m_Name: MiniBoss
   m_TagString: Untagged
@@ -401,9 +402,6 @@ MonoBehaviour:
   maxHealth: 150
   invincibilitySeconds: 0.25
   despawnOnDeath: 0
-  shakeCameraOnHit: 0
-  deathSfxEmitter: {fileID: 8623496746779532416}
-  deathVfxPrefab: {fileID: 8782009059513614302, guid: 9bbfb95eb90a55b4484c7534f8356c18, type: 3}
   hitFlash: {fileID: -1622493305807909306}
   CurrentHealth:
     m_InternalValue: 0
@@ -534,9 +532,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5785f6e44a5dedf4e82ef36c45d30be5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMotor3D
-  enemyLayer:
-    serializedVersion: 2
-    m_Bits: 128
+  repathInterval: 0.15
 --- !u!136 &221754453739642766
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -560,20 +556,6 @@ CapsuleCollider:
   m_Height: 15.962324
   m_Direction: 1
   m_Center: {x: -0.09382391, y: 5, z: 0}
---- !u!114 &7411301675834358077
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5704173772706422311}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d344ac35003dd148bd93a87709be221, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::KnockReceiver3D
-  ShowTopMostFoldoutHeaderGroup: 1
-  decay: 20
 --- !u!114 &8080090428621550567
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -678,6 +660,42 @@ MonoBehaviour:
     chipSpeed: 0.35
     fadeSpeed: 3
     sortingOrder: 5
+--- !u!114 &8203075160494308856
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5704173772706422311}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc9313594da96e64e9a2f1d8b7ea6e70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDeathFx
+  deathSfxEmitter: {fileID: 8623496746779532416}
+  deathVfxPrefab: {fileID: 0}
+--- !u!195 &1234070525176856298
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5704173772706422311}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 5.41
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 12.71
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 3
 --- !u!1001 &3359382731036564420
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -692,7 +710,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7f15b74a4fd052045a8cf15ba04e9fdf, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.802
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7f15b74a4fd052045a8cf15ba04e9fdf, type: 3}
       propertyPath: m_LocalPosition.z

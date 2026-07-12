@@ -89,7 +89,7 @@ public class WeaponVisualHandler : NetworkBehaviour
 
     // ─── Server RPCs ──────────────────────────────────────────────────────────
 
-    [ServerRpc(RequireOwnership = false)]
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
     private void AcquireWeaponServerRpc(int slot)
     {
         int newMask = _acquiredMask.Value | (1 << slot);
@@ -97,7 +97,7 @@ public class WeaponVisualHandler : NetworkBehaviour
         _shownIndex.Value   = slot;
     }
 
-    [ServerRpc(RequireOwnership = false)]
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
     private void SetShownIndexServerRpc(int index)
     {
         _shownIndex.Value = index;

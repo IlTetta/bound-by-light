@@ -3168,7 +3168,6 @@ GameObject:
   - component: {fileID: 5451421713964977486}
   - component: {fileID: 2606107026530185434}
   - component: {fileID: 2155112024608437430}
-  - component: {fileID: 5223540557807905154}
   - component: {fileID: 9195486384140229948}
   - component: {fileID: 558241094478874487}
   - component: {fileID: 5840381423487347905}
@@ -3181,6 +3180,7 @@ GameObject:
   - component: {fileID: 6018601159999375334}
   - component: {fileID: 4515839207021146930}
   - component: {fileID: 4990605372928223310}
+  - component: {fileID: 1327905037078244086}
   m_Layer: 3
   m_Name: PlayerPrefab_Twin1
   m_TagString: Player
@@ -3301,9 +3301,6 @@ MonoBehaviour:
   maxHealth: 100
   invincibilitySeconds: 0.25
   despawnOnDeath: 0
-  shakeCameraOnHit: 1
-  deathSfxEmitter: {fileID: 0}
-  deathVfxPrefab: {fileID: 0}
   hitFlash: {fileID: 4515839207021146930}
   CurrentHealth:
     m_InternalValue: 0
@@ -3692,20 +3689,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimatorHandler
   ShowTopMostFoldoutHeaderGroup: 1
   animator: {fileID: 5765821950656201701}
---- !u!114 &5223540557807905154
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4848108505839494090}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d344ac35003dd148bd93a87709be221, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::KnockReceiver3D
-  ShowTopMostFoldoutHeaderGroup: 1
-  decay: 20
 --- !u!114 &9195486384140229948
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3942,6 +3925,19 @@ MonoBehaviour:
   pulseSpeed: 2.2
   progressSmoothing: 12
   lineMaterial: {fileID: 2100000, guid: 4539910f2e704194a838c60e277bb72b, type: 2}
+--- !u!114 &1327905037078244086
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4848108505839494090}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed6ee64e4788d2449b1bc8d2cc1a8a40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHitReaction
+  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!1 &5023043807262451753
 GameObject:
   m_ObjectHideFlags: 0

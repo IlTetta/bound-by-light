@@ -57,7 +57,7 @@ public class PlayerPuzzleInteractor : NetworkBehaviour
 
     private PrismReflector3D FindNearestPrism()
     {
-        var prisms = FindObjectsOfType<PrismReflector3D>();
+        var prisms = FindObjectsByType<PrismReflector3D>(FindObjectsSortMode.None);
         PrismReflector3D best = null;
         float minDist = float.MaxValue;
 

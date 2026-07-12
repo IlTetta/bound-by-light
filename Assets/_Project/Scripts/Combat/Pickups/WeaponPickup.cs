@@ -30,8 +30,8 @@ public class WeaponPickup : NetworkBehaviour
 
     // ─── API chiamata da OnTriggerEnter ───────────────────────────────────────
 
-    [ServerRpc(RequireOwnership = false)]
-    public void RequestPickupServerRpc(ServerRpcParams rpcParams = default)
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    public void RequestPickupServerRpc(RpcParams rpcParams = default)
     {
         ulong callerId = rpcParams.Receive.SenderClientId;
 

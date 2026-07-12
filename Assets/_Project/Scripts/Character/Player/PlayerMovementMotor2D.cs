@@ -2,9 +2,12 @@ using UnityEngine;
 using Unity.Netcode;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public sealed class PlayerMovementMotor2D : NetworkBehaviour
+public sealed class PlayerMovementMotor2D : NetworkBehaviour, IKnockbackReceiver
 {
     public enum MoveMode { Free, Strict4, Strict8 }
+
+    /// <summary>IKnockbackReceiver: HealthNetwork instrada qui il knockback (owner-side).</summary>
+    public void ApplyKnockback(Vector2 impulseXZ) => AddImpact(impulseXZ);
 
     [Header("Tuning")]
     [SerializeField] private MoveMode mode = MoveMode.Free;
